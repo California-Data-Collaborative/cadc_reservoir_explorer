@@ -153,6 +153,7 @@ cartodb.createLayer(map,reservoir_storage, options = {https:true})
             //y_axis: false,
             small_text: true,
             y_label: 'Water Volume (AF)',
+            height: 195,
 
 
 

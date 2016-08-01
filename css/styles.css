@@ -62,6 +62,12 @@ body {
   padding: 10px;
 }
 
+#explanation{
+  background: #908F8F;
+  padding: 10px;
+  margin-top: 10px;
+}
+
 #ts {
   background: #908F8F;
   /*height: 50%;*/
