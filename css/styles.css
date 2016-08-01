@@ -58,18 +58,20 @@ body {
 }
 
 #cal{
-  background: #908F8F;
+  /*background: #908F8F;*/
+  background: #C8C7C7;
   padding: 10px;
 }
 
 #explanation{
-  background: #908F8F;
+  background: #C8C7C7;
   padding: 10px;
   margin-top: 10px;
 }
 
 #ts {
-  background: #908F8F;
+  /*background: #908F8F;*/
+   background: #C8C7C7;
   /*height: 50%;*/
 }
 
@@ -115,16 +117,22 @@ body {
   padding: 15px;
 }
 
-/*.mg-x-axis text, .mg-y-axis text {
-  fill: #9c9999 ;
+.mg-x-axis text, .mg-y-axis text {
+  fill: black ;
   opacity: 1 ;
 }
 
+.mg-y-axis .label text{
+  transform: translate(0, 25) !important;
+}
+
+
+
 .mg-x-axis line, .mg-y-axis line {
-  stroke: #9c9999 ;
+  stroke: black ;
   opacity: .5 ;
 }
 
 .mg-active-datapoint{
-  fill: #9c9999;
-}*/
+  fill: black;
+}

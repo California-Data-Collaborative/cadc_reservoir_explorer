@@ -144,14 +144,17 @@ cartodb.createLayer(map,reservoir_storage, options = {https:true})
 
           MG.data_graphic({
             //animate_on_load: true,
+            //description: "test",
             data: tsData,
             full_width: true,
             title: data.name,
             //buffer: 10,
+            //yax_units_append: true,
            
-            //yax_units: 'AF',
+            //yax_units: '(AF)',
+            
             //y_axis: false,
-            small_text: true,
+            //small_text: true,
             y_label: 'Water Volume (AF)',
             height: 195,
 
@@ -162,7 +165,8 @@ cartodb.createLayer(map,reservoir_storage, options = {https:true})
              max_x: new Date('2016-06-07'),
              baselines: [{value: data.storage_capacity, label: "Reservoir Capacity: " + data.storage_capacity}],
         //     xax_count: 7,
-           max_y: 5000000,
+        max_y: data.storage_capacity,
+           //max_y: 5000000,
            target: "#ts", // the html element that the graphic is inserted in
            x_accessor: 'date',  // the key that accesses the x value
            y_accessor: 'reservoir_storage' // the key that accesses the y value
@@ -173,6 +177,9 @@ cartodb.createLayer(map,reservoir_storage, options = {https:true})
         //   },
         //   markers: peak_marker,
         });
+
+d3.selectAll('.label')
+    .attr('transform', 'translate(-14, 0) rotate(-90)');
           
            });
 // end dev
