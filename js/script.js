@@ -38,7 +38,7 @@ function main() {
   var sublayers_design = []
 
   // Pull tiles from OpenStreetMap
-  L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png', {
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
   }).addTo(map);
 
@@ -132,7 +132,7 @@ cartodb.createLayer(map,reservoir_storage)
         console.log(data.dam_id)
 
         //dev
-         $.getJSON("http://thenamesdave.cartodb.com/api/v2/sql?q=SELECT%20*%20FROM%20reservoir_levels_1%20WHERE%20dam_id%20=%20%27"+data.dam_id+"%27", function(tableData) {
+         $.getJSON("https://thenamesdave.cartodb.com/api/v2/sql?q=SELECT%20*%20FROM%20reservoir_levels_1%20WHERE%20dam_id%20=%20%27"+data.dam_id+"%27", function(tableData) {
 
         
     //       // var peak_marker = [{ 
