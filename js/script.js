@@ -43,7 +43,7 @@ function main() {
   }).addTo(map);
 
   // Add data layers to map
-  cartodb.createLayer(map,reservoir_capacity)
+  cartodb.createLayer(map,reservoir_capacity, https=true)
   .addTo(map, 0)
   .done(function(layer) {
       // do stuff
@@ -94,7 +94,7 @@ function main() {
 
 
 
-cartodb.createLayer(map,reservoir_storage)
+cartodb.createLayer(map,reservoir_storage, https=true)
 .addTo(map, 1)
 .done(function(layer) {
 
