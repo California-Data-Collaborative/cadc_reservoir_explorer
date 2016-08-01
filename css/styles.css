@@ -4,6 +4,10 @@ html, body, #container {
   overflow: hidden;
 }
 
+p {
+  font-size: 1.33rem;
+}
+
 body {
   padding-top: 50px;
   font-family: 'Open Sans', sans-serif, Arial;
@@ -122,9 +126,9 @@ body {
   opacity: 1 ;
 }
 
-.mg-y-axis .label text{
+/*.mg-y-axis .label text{
   transform: translate(0, 25) !important;
-}
+}*/
 
 
 
