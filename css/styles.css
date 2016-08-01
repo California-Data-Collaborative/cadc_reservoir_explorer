@@ -1,0 +1,124 @@
+html, body, #container {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  padding-top: 50px;
+  font-family: 'Open Sans', sans-serif, Arial;
+}
+
+#map {
+  width: auto;
+  height: 100%;
+  position: relative;
+}
+
+
+.dropdown-toggle {
+  font-weight: lighter;
+  /*font-family: "Helvetica";*/
+}
+
+.dropdown-menu {
+  font-weight: lighter;
+  /*font-family: "Helvetica";*/
+}
+
+
+.navbar .navbar-brand {
+  font-weight: 25;
+  /*font-family: "Helvetica";*/
+  font-size: 25px;
+
+  color: #FFFFFF;
+}
+
+.navbar {
+  background: #1f1f1f;
+}
+
+.navbar-inverse .navbar-nav>li>a {
+  color: #fff;
+}
+
+#panel {
+ background: #5C5C5C;
+ padding: 10px;
+ float: left;
+ top: 65px;
+ right: 15px;
+ padding-bottom: 10px;
+ z-index: 10;
+ width: 33%;
+ height: 100%;
+ /*position: absolute;*/
+ 
+}
+
+#cal{
+  background: #908F8F;
+  padding: 10px;
+}
+
+#ts {
+  background: #908F8F;
+  /*height: 50%;*/
+}
+
+.cartodb-legend-stack  {
+  border-radius: 0px;}
+
+
+.mg-chart-title{
+  margin-top: 10px;
+}
+
+.mg-area1-color{
+  fill:#2167AB;
+}
+
+.mg-line1-color{
+  stroke:#2167AB;
+}
+
+
+/*cal dev*/
+
+/*.ui-widget{
+  border-radius: 0px;
+}
+.ui-datepicker .ui-datepicker-header {
+  background: #030202;
+  color: #908F8F;
+  border-radius: 0px;
+}
+
+.ui-corner-all{
+  border-radius: 0px;
+}
+
+.ui-widget-content{
+  background: #5C5C5C;
+  border-radius: 0px;
+}*/
+/**/
+ .button {
+  text-align: center;
+  padding: 15px;
+}
+
+/*.mg-x-axis text, .mg-y-axis text {
+  fill: #9c9999 ;
+  opacity: 1 ;
+}
+
+.mg-x-axis line, .mg-y-axis line {
+  stroke: #9c9999 ;
+  opacity: .5 ;
+}
+
+.mg-active-datapoint{
+  fill: #9c9999;
+}*/
