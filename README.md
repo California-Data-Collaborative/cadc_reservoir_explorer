@@ -6,5 +6,5 @@ An agile approach to visualizing California's reservoir levels in real-time.
 
 ## Key Data Sources ##
 
- 1. [Resources via Maven's Notebook](https://mavensnotebook.com/the-notebook-file-cabinet/water-and-hydrology-resources-on-the-internet-reservoir-conditions-precipitation-indexes-snow-charts-drought-maps-and-more/) - 
+ 1. [Resources via Maven's Notebook](https://mavensnotebook.com/the-notebook-file-cabinet/water-and-hydrology-resources-on-the-internet-reservoir-conditions-precipitation-indexes-snow-charts-drought-maps-and-more/)
  2. [California Data Exchange Center - Reservoirs](http://cdec.water.ca.gov/reservoir.html) This is an official data source.
