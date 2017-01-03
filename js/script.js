@@ -14,7 +14,7 @@ function main() {
 
   // Put layer data into a JS object
   var reservoir_storage = {
-    user_name: 'thenamesdave',
+    user_name: 'california-data-collaborative',
     type: 'cartodb',
     sublayers: [{ 
       sql: "SELECT * FROM reservoir_levels_1 WHERE (date = ('2016-06-07'))",
@@ -24,7 +24,7 @@ function main() {
   };
 
   var reservoir_capacity = {
-    user_name: 'thenamesdave',
+    user_name: 'california-data-collaborative',
     type: 'cartodb',
     sublayers: [{
       sql: "SELECT * FROM reservoir_levels_1 WHERE (date = ('2016-06-07'))",
@@ -132,7 +132,7 @@ cartodb.createLayer(map,reservoir_storage, options = {https:true})
         console.log(data.dam_id)
 
         //dev
-         $.getJSON("https://thenamesdave.cartodb.com/api/v2/sql?q=SELECT%20*%20FROM%20reservoir_levels_1%20WHERE%20dam_id%20=%20%27"+data.dam_id+"%27", function(tableData) {
+         $.getJSON("https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20reservoir_levels_1%20WHERE%20dam_id%20=%20%27"+data.dam_id+"%27", function(tableData) {
 
         
     //       // var peak_marker = [{ 
