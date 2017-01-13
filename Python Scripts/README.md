@@ -7,9 +7,10 @@ Python scripts written using Beautiful Soup to parse below reservior data:
 * Capacity
 * Storage
 * Percentage
+
 ***
 GetCapacity.py
->To parse Static Data(including Capacity/Station Name) for each selected dam (reservoir)
+> To parse Static Data(including Capacity/Station Name) for each selected dam (reservoir)
 GetDataListDict.py
 > To parse Daily Updated Data (including Date/Elevation/Storage for selected dam (reservoir)
 Merge.py
