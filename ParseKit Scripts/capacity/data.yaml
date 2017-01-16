@@ -1,0 +1,118 @@
+###
+# capacity
+# 2017-01-14
+###
+
+extract:
+  - step: Add tables to API calls
+    action: extract.emit.EmitPaths
+    paths:
+      - "http://cdec.water.ca.gov/cgi-progs/profile?s={dam_abbr}"
+    generators:
+      dam_abbr:
+        type: string
+        values:
+          - ALM
+          - ANT
+          # For Some dam_abbr (eg. BAR), path (url) above can not return a 'table' including 'capacity'.
+          # In this situation, the parsing process will be terminated.
+          # - BAR
+          # - BCL
+          # - BER
+          # - BHC
+          # - BIL
+          # - BLB
+          # - BOC
+          # - BRD
+          # - BTV
+          # - BUC
+          # - BUL
+          # - CAS
+          # - CCH
+          # - CFW
+          # - CHV
+          # - CLA
+          # - CLE
+          # - CMI
+          # - CMN
+          # - COY
+          # - CPL
+          # - CTG
+          # - CVE
+          # - DAV
+          # - DMV
+          # - DNN
+          # - DNP
+          # - DON
+          # - EDN
+          # - ENG
+          # - EXC
+          # - FMD
+          # - FOL
+          # - FRD
+          # - FRM
+          # - GDW
+          # - GLL
+          # - HHL
+          # - HID
+          # - HTH
+          # - ICH
+          # - INP
+          # - INV
+          # - ISB
+          # - JNC
+          # - KES
+          # - LEW
+          # - LGV
+          # - LON
+          # - LPY
+          # - LVY
+          # - LYS
+          # - MAR
+          # - MIL
+          # - MMW
+          # - MRT
+          # - NAT
+          # - NHG
+          # - NML
+          # - ORO
+          # - OWN
+          # - PAR
+          # - PNF
+          # - PRA
+          # - PRR
+          # - PRS
+          # - PYM
+          # - RBL
+          # - RLF
+          # - RTD
+          # - SAT
+          # - SCC
+          # - SCD
+          # - SHA
+          # - SIV
+          # - SJT
+          # - SLB
+          # - SLC
+          # - SLS
+          # - SNL
+          # - SPC
+          # - SPM
+          # - STP
+          # - SVO
+          # - SWB
+          # - TAB
+          # - TRM
+          # - TUL
+          # - UNV
+          # - VAR
+          # - WHI
+          # - WRS
+          # - WSN
+
+  - step: Fetch a simple URL.
+    action: extract.source.http.DownloadFiles
+
+  - step: Apply the Codec on the capacity Page
+    action: parsekit.ApplyCodec
+    codec: capacity
