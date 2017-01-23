@@ -16,7 +16,7 @@ Historic data about dam which includes date, storage, elevation are collected fr
 
 ## Datasource Notes
 
-Document [...] updated here[(git hub repo)] provides the details about the data-source 
+Document Technical Specification uploaded here "https://github.com/California-Data-Collaborative/cadc_reservoir_explorer/tree/master/reservior_explorer_parsers"  provides the details about the data-source 
 
 ## Contacts
 
