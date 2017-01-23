@@ -64,13 +64,6 @@ transform:
 #         - "Dam_ABBR"
 #         - "Date" 
 
-  # - step: Output to CSV in 'production' S3 bucket
-  #   action: load.OutputS3CSV
-  #   repository: cawater-public
-  #   credentials:
-  #     aws_access_key_id: AKIAJSSMKZF3XZ3EHGGQ
-  #     aws_secret_access_key: 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
-
   # - step: Output to CSV in my documents folder
   #   action: load.OutputCSV
   #   table_key: Dam_ABBR
