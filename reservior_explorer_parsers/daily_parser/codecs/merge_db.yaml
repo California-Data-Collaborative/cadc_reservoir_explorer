@@ -1,0 +1,61 @@
+name: merge_db
+
+dependencies:
+  "lib.DropNARow": "DropNARow"
+
+description: >
+  The codec to merge results data
+
+transform:
+  - step: Set the Operators table schema
+    action: transform.schema.SetSchema
+    scope: parser
+    fields:
+      - name: Dam_ABBR
+        type: string
+      - name: Latitude
+        type: string
+      - name: Longitude
+        type: string  
+      - name: Dam_Name
+        type: string
+      - name: Capacity
+        type: string
+
+  - step: Scrape Records off the Page
+    action: extract.formats.sql.ReadRecords
+    connection_string: sqlite:///.parse/dam.db
+  
+  - step: Drop NA Row
+    action: DropNARow.dropna  
+
+  - step: Get rid of garbage characters
+    action: transform.strings.Strip 
+
+  - step: Coerce empty strings to Null
+    action: transform.strings.DisambiguateNulls
+    nulls:
+      - ""
+
+load:
+  - step: Specify Table Name
+    action: load.SetTableName
+    table_name: capacity_and_latlong
+
+  - step: Output Records to SQLite Table
+    action: load.OutputSQL
+    overwrite: no
+    upsert: yes
+    repository: sqlite:///dam.db
+    primary_keys:
+      capacity_and_latlong:
+        - "Dam_ABBR"
+         
+  - step: Output Records to SQLite Table
+    action: load.OutputSQL
+    overwrite: no
+    upsert: yes
+    repository: sqlite:///cache.db
+    primary_keys:
+      capacity_and_latlong:
+        - "Dam_ABBR"
