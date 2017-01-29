@@ -49,21 +49,21 @@ transform:
     nulls:
       - ""
 
-# load:
-#  - step: Specify Table Name
-#    action: load.SetTableName
-#    table_name: dam_data
+load:
+  - step: Specify Table Name
+    action: load.SetTableName
+    table_name: dam_data
 
-#   - step: Output Records to SQLite Table
-#     action: load.OutputSQL
-#     overwrite: no 
-#     upsert: yes
-#     repository: sqlite:///dam_data.db
-#     primary_keys:
-#       dam_data:
-#         - "Dam_ABBR"
-#         - "Date" 
+  - step: Output Records to SQLite Table
+    action: load.OutputSQL
+    overwrite: no
+    upsert: yes
+    repository: sqlite:///daily.db
+    primary_keys:
+      dam_data:
+        - "Dam_ABBR"
+        - "Date" 
 
   # - step: Output to CSV in my documents folder
   #   action: load.OutputCSV
-  #   table_key: Dam_ABBR
+  #   # table_key: Dam_ABBR

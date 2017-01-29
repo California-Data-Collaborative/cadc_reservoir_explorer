@@ -18,17 +18,17 @@ class emit_paths(parsekit.Step):
             
             dam_id = row[0]
             date = datetime.datetime.now() - datetime.timedelta(days=2)
-            span = "1year"             
+            span = "5year"             
             path = 'http://cdec.water.ca.gov/cgi-progs/queryDaily?%s&d=%s&span=%s' % (dam_id, date, span)
             yield path, metadata
 
 #######################################################################
 # Testing on some dams
-        # date = datetime.datetime.now()
-        # span = "1year" 
+        # date = datetime.datetime.now() - datetime.timedelta(days=1)
+        # span = "3days" 
         # dams = [ 'PAR', 'PNF']
         # # dams = [ 'BLB', 'BRD', 'BUC', 'BUL', 'CAS', 'CHV', 'CLE', 'CMN', 'DAV', 'DNN', 'ENG', 'FOL', 'HID', 'HTH', 'INV', 'ISB', 
-        # #         'ANT', 'KES', 'LEW', 'LON', 'MIL', 'NHG', 'NML', 'ORO', 'PAR', 'PNF', 'PYM', 'SCC', 'SHA', 'SNL', 'STP', 'TRM', 'TUL', 'UNV', 'WHI', 'WRS']
+        # # #         'ANT', 'KES', 'LEW', 'LON', 'MIL', 'NHG', 'NML', 'ORO', 'PAR', 'PNF', 'PYM', 'SCC', 'SHA', 'SNL', 'STP', 'TRM', 'TUL', 'UNV', 'WHI', 'WRS']
 
 
         # for dam in dams:
