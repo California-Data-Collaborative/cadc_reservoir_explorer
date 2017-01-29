@@ -80,10 +80,11 @@ class parser(parsekit.Step):
 #       	Get the data as per the attribute(1 table present in the html page)			
 			else:
 
+				# self.log.info(len(soup.find_all("tr")[2:]))
+				# self.log.info(soup.find_all("tr")[2:])
 				for day in range(len(soup.find_all("tr")[2:])):
 					j = day + 2
 					list_row = self.RecordDict()
-					# self.log.info(list_row.keys())
 					list_row['Dam_ABBR'] = dam_abbr
 					n_att = 0
 					for val in soup.find_all("tr")[j].find_all('td'):

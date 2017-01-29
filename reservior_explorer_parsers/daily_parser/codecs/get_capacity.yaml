@@ -53,7 +53,7 @@ load:
 
   - step: Output Records to SQLite Table
     action: load.OutputSQL
-    overwrite: no
+    overwrite: yes
     upsert: yes
     repository: sqlite:///.parse/dam.db
     primary_keys:

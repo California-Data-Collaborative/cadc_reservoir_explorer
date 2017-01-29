@@ -25,9 +25,6 @@ class emit_paths(parsekit.Step):
             yield path, metadata
         cur.close()
         
-        
-        
-
 ####################################################
 # Test on some  # date = datetime.datetime.now()
         # span = "1day" 
