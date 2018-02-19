@@ -1,6 +1,6 @@
 '''
 Purpose:
-	Parse 
+	Parse
 		"Date"
 		"Reservoir Elevation (Daily)"
 		"Storage (Daily)"
@@ -10,34 +10,36 @@ Parameter:
 	date: the date we start to collect data, eg: "6-JAN-2017"
 	span: time span for query, eg: "1day" or "10days" or "1month"
 
+Updated 2/15/2018 by Mike Amodeo
 '''
 
 __author__ = "Dongjie Fan (dj)"
 
 from bs4 import BeautifulSoup
-import urllib2
+import urllib.request
 import pandas as pd
+import datetime
 
 def RecordDict():
-	return {'Dam_ABBR': None, 
-	        'Date': None, 
-	        'RES ELE': None, 
-	        'STORAGE': None 
-	        # 'RES CHG': None, 
-	        # 'OUTFLOW': None, 
-	        # 'INFLOW': None, 
-	        # 'EVAP': None, 
-	        # 'FNF': None, 
-	        # 'RIV REL': None, 
-	        # 'PPT INC': None, 
-	        # 'SPILL': None, 
+	return {'Dam_ABBR': None,
+	        'Date': None,
+	        'RES ELE': None,
+	        'STORAGE': None
+	        # 'RES CHG': None,
+	        # 'OUTFLOW': None,
+	        # 'INFLOW': None,
+	        # 'EVAP': None,
+	        # 'FNF': None,
+	        # 'RIV REL': None,
+	        # 'PPT INC': None,
+	        # 'SPILL': None,
 	        #'DIS PWR': None
 	        }
 
 # More than 95 dams in total
 def GetDamID():
 	html = "http://cdec.water.ca.gov/misc/resinfo.html"
-	page = urllib2.urlopen(html)
+	page = urllib.request.urlopen(html)
 	soup = BeautifulSoup(page, "lxml")
 	dam_abbr = []
 	for i in soup.table.find_all("td"):
@@ -48,21 +50,25 @@ def GetDamID():
 # 95 dams in total
 def GetDamsABBR():
 	html = "http://cdec.water.ca.gov/misc/daily_res.html"
-	page = urllib2.urlopen(html)
+	page = urllib.request.urlopen(html)
 	soup = BeautifulSoup(page, "lxml")
 	dam_abbr = []
 	for i in soup.table.find_all("b"):
 		if len(i.text) == 3:
 			dam_abbr.append(str(i.text))
-			#print str(i.text)
 	return dam_abbr
 
-def GetSoup(dam_abbr="ORO", date="6-JAN-2017", span="1day"):
+def GetSoup(dam_abbr="ORO", date="6-JAN-2017", span="5year"):
+	# Old Format
 	#html = "http://cdec.water.ca.gov/cgi-progs/queryDaily?ORO&d=6-JAN-2017+09:35&span=1day"
-    html = "http://cdec.water.ca.gov/cgi-progs/queryDaily?"+ dam_abbr + "&d=" + date + "+09:35&span=" + span
-    page = urllib2.urlopen(html)
-    soup = BeautifulSoup(page, "lxml")
-    return soup
+    #html = "http://cdec.water.ca.gov/cgi-progs/queryDaily?"+ dam_abbr + "&d=" + date + "+09:35&span=" + span
+
+	# NEW FORMAT
+	#http://cdec.water.ca.gov/dynamicapp/QueryDaily?s=ORO&end=2018-02-15&span=5year#
+	html = "http://cdec.water.ca.gov/dynamicapp/QueryDaily?s=" + dam_abbr + "&end=" + date + "&span=" + span
+	page = urllib.request.urlopen(html)
+	soup = BeautifulSoup(page, "lxml")
+	return soup
 
 def GetAttributName(soup):
 	list_att = []
@@ -82,30 +88,35 @@ def GetDataPerDam(soup, dam_abbr):
 			n_att = 0
 			for val in soup.find_all("tr")[j].find_all('td'):
 				if not val.find_all("a"):
+					if n_att == 0:
+						month, daynum, year = str(val.text.strip(" ")).split("/")
+						list_row['Date'] = "-".join([year, month, daynum])
 					att = list_dam_att[n_att]
 					if att in list_row.keys():
-						list_row[att] = str(val.contents[0].strip(" "))
+						list_row[att] = str(val.text.strip(" ")).replace(",", "")
 					n_att = n_att + 1
 			list_dam_data.append(list_row)
 		return list_dam_data
 	except IndexError:
 		pass
-	
+
 
 def GetDataAllDams(dams=GetDamsABBR(), date="6-JAN-2017", span="1day"):
 	list_data = []
 	for dam in dams:
-		print dam
-		list_data.extend(GetDataPerDam(GetSoup(dam, date, span), dam))
+		print (dam)
+		try:
+			list_data.extend(GetDataPerDam(GetSoup(dam, date, span), dam))
+		except:
+			pass
 	return list_data
 
+date = str(datetime.date.today())
+print(date)
+#res=GetDataAllDams(['ORO', 'CLE'], "11-JAN-2017", "1month")
+res=GetDataAllDams(date = date, span = "5year")
 
-res=GetDataAllDams(['ORO', 'CLE'], "11-JAN-2017", "1month")
 #print res
 #print len(res)
 df = pd.DataFrame(res)
 df.to_csv("Daily.csv")
-
-
-
-
