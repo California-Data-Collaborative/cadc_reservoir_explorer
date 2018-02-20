@@ -10,7 +10,7 @@ Parameter:
 	date: the date we start to collect data, eg: "6-JAN-2017"
 	span: time span for query, eg: "1day" or "10days" or "1month"
 
-Updated 2/15/2018 by Mike Amodeo
+Updated 2/19/2018 by Mike Amodeo
 '''
 
 __author__ = "Dongjie Fan (dj)"
@@ -59,11 +59,6 @@ def GetDamsABBR():
 	return dam_abbr
 
 def GetSoup(dam_abbr="ORO", date="6-JAN-2017", span="5year"):
-	# Old Format
-	#html = "http://cdec.water.ca.gov/cgi-progs/queryDaily?ORO&d=6-JAN-2017+09:35&span=1day"
-    #html = "http://cdec.water.ca.gov/cgi-progs/queryDaily?"+ dam_abbr + "&d=" + date + "+09:35&span=" + span
-
-	# NEW FORMAT
 	#http://cdec.water.ca.gov/dynamicapp/QueryDaily?s=ORO&end=2018-02-15&span=5year#
 	html = "http://cdec.water.ca.gov/dynamicapp/QueryDaily?s=" + dam_abbr + "&end=" + date + "&span=" + span
 	page = urllib.request.urlopen(html)
@@ -81,20 +76,22 @@ def GetDataPerDam(soup, dam_abbr):
 	try:
 		list_dam_data = []
 		list_dam_att = GetAttributName(soup)
-		for day in range(len(soup.find_all("tr")[2:])):
-			j = day + 2
-			list_row = RecordDict()
-			list_row['Dam_ABBR'] = dam_abbr
-			n_att = 0
-			for val in soup.find_all("tr")[j].find_all('td'):
-				if not val.find_all("a"):
-					if n_att == 0:
-						month, daynum, year = str(val.text.strip(" ")).split("/")
-						list_row['Date'] = "-".join([year, month, daynum])
-					att = list_dam_att[n_att]
-					if att in list_row.keys():
+		#for day in range(len(soup.find_all("tr")[2:])): # remove this loop
+			#j = day + 2
+		list_row = RecordDict()
+		list_row['Dam_ABBR'] = dam_abbr
+		n_att = 0
+		for val in soup.find_all("tr")[-2].find_all('td'):
+			if not val.find_all("a"):
+				if n_att == 0:
+					month, daynum, year = str(val.text.strip(" ")).split("/")
+					list_row['Date'] = "-".join([year, month, daynum])
+				att = list_dam_att[n_att]
+				if att in list_row.keys():
+					if(val.text.strip(" ") != '--'):
 						list_row[att] = str(val.text.strip(" ")).replace(",", "")
-					n_att = n_att + 1
+				n_att = n_att + 1
+		if list_row['RES ELE'] != None or list_row['STORAGE'] != None:
 			list_dam_data.append(list_row)
 		return list_dam_data
 	except IndexError:
@@ -104,7 +101,6 @@ def GetDataPerDam(soup, dam_abbr):
 def GetDataAllDams(dams=GetDamsABBR(), date="6-JAN-2017", span="1day"):
 	list_data = []
 	for dam in dams:
-		print (dam)
 		try:
 			list_data.extend(GetDataPerDam(GetSoup(dam, date, span), dam))
 		except:
@@ -112,11 +108,8 @@ def GetDataAllDams(dams=GetDamsABBR(), date="6-JAN-2017", span="1day"):
 	return list_data
 
 date = str(datetime.date.today())
-print(date)
 #res=GetDataAllDams(['ORO', 'CLE'], "11-JAN-2017", "1month")
-res=GetDataAllDams(date = date, span = "5year")
+res=GetDataAllDams(date = date, span = "10day")
 
-#print res
-#print len(res)
 df = pd.DataFrame(res)
 df.to_csv("Daily.csv")
