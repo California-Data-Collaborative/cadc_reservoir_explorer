@@ -31,9 +31,11 @@ function main() {
       '}',
       '#layer {',
       '  marker-width: "reservoir_storage"/5000;',
+      '  marker-type: ellipse;',
       '  marker-fill-opacity: 0.8;',
       '  marker-fill: #2167AB; ',
-      '  comp-op: "lighten";',
+      //'  comp-op: "lighten";',
+      '  marker-line-width: 0;',
       '}'
     ].join('\n');
 
@@ -130,7 +132,7 @@ function main() {
 
   // Add capacity data layers to map
   //var drawStorage = function(d){
-  cartodb.createLayer(map,reservoir_capacity, options = {https:true})
+  cartodb.createLayer(map, reservoir_capacity, options = {https:true})
     .addTo(map, 0)
     .done(function(layer) {
 
@@ -179,12 +181,15 @@ function main() {
   //   }]
   // };
   var reservoir_storage = {
-    user_name: 'california-data-collaborative',
     type: 'torque',
-    sql: "SELECT * FROM reservoir_levels_1",// WHERE (date = ('" + sliderDate + "'))",
-      //sql: "SELECT * FROM reservoir_levels_1 WHERE (date = ('2016-06-07'))",
-    cartocss: CARTOCSS//storageStyles,
-      //interactivity: ['precent_full', 'name', 'reservoir_storage', 'storage_capacity', 'dam_id', 'date']
+    options: {
+        user_name: 'california-data-collaborative',
+        table_name: 'reservoir_levels_1',
+        //query: "SELECT * FROM reservoir_levels_1",// WHERE (date = ('" + sliderDate + "'))",
+        //sql: "SELECT * FROM reservoir_levels_1 WHERE (date = ('2016-06-07'))",
+        cartocss: CARTOCSS//storageStyles,
+        //interactivity: ['precent_full', 'name', 'reservoir_storage', 'storage_capacity', 'dam_id', 'date']
+    }
   };
   console.log(reservoir_storage);
   //var daily_storage = reservoir_storage.filter(function (d){
