@@ -9,11 +9,12 @@
 	<meta name="author" content="">
 	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"> -->
 	<!-- <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" /> -->
-  <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+  	<link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
 	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"> -->
 	<link rel="stylesheet" href="bootstrap-3.3.7-dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="css/metricsgraphics.css">
+  	<link rel="stylesheet" href="css/metricsgraphics.css">
 	<link rel="stylesheet" href="css/styles.css">
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
 
 </head>
 <body>
@@ -58,27 +59,25 @@
  </div>
  <div id="container">
  	<!-- <div class="row"> -->
-
- 		<div id="panel">
-
- 			<div id="cal">
+ 	<div id="panel">
+			<!-- <div id="cal">
  				<label for="date"><i class="glyphicon glyphicon-calendar"></i></label>
  				<input type="text" id="date" readonly>
- 			</div>
-      <div id="explanation">
-        <p>The CaDC Reservoir Storage Explorer highlights 37 large reservoirs in California.</p>
+ 			</div> -->
+    	<div id="explanation">
+        	<p>The CaDC Reservoir Storage Explorer highlights 37 large reservoirs in California.</p>
 
-        <p>Yellow bubbles indicate total reservoir capacities and blue bubbles indicate reservoir storages for a selected date. Click the calendar icon above to change the date displayed.</p>
+        	<p>Yellow bubbles indicate total reservoir capacities and blue bubbles indicate reservoir storages for a selected date. Click the calendar icon above to change the date displayed.</p>
 
-        <p>Click reservoirs to explore water storage over time.</p>
+        	<p>Click reservoirs to explore water storage over time.</p>
 
-        <p>To download source data, use the Download Data menu at the upper right.</p>
+        	<p>To download source data, use the Download Data menu at the upper right.</p>
 
-        <p>This tool was developed in partnership with Seed Consulting Group as part of an agile feasibility study of the Dodd "Open and Transparent Water Data Act."</p>
-      </div>
-
- 			<div id='ts'></div>
- 		</div>
+        	<p>This tool was developed in partnership with Seed Consulting Group as part of an agile feasibility study of the Dodd "Open and Transparent Water Data Act."</p>
+		</div>
+		<div id="slider"></div>
+ 		<div id='ts'></div>
+ 	</div>
 
  		<div id="map"></div>
 	<!-- </div> -->
@@ -86,17 +85,21 @@
 <!-- /.container -->
 <!-- <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css"> -->
 
+<!-- <script src="https://code.jquery.com/jquery-1.11.1.js"></script> -->
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-<link rel="stylesheet" href="css/jquery-bootstrap-datepicker.css">
+<!-- <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script> -->
+<!-- <link rel="stylesheet" href="css/jquery-bootstrap-datepicker.css"> -->
+<!-- <script src='http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb_nojquery.js'></script> -->
 <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+<script src="../dist/torque.full.uncompressed.js"></script>
 <!-- <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script> -->
 <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script> -->
-<script type="text/javascript" src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script> 
-<script type="text/javascript" src="js/style_vars.js"></script> 
+<script type="text/javascript" src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/style_vars.js"></script>
 <script type="text/javascript" src="js/script.js"></script>
 <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src='js/libs/metricsgraphics.js'></script>
-<script src="https://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+<!-- <script src="https://code.jquery.com/ui/1.11.1/jquery-ui.js"></script> -->
 <script>
 window.onload = main;
 </script>
