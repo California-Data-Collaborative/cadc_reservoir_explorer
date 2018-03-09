@@ -4,6 +4,32 @@ function addZero(i) {
   }
   return i;
 }
+function draw_area_graph(data){
+    // gets data for selected dam over time
+    $.getJSON("https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20reservoir_reading_extract%20WHERE%20dam_id%20=%20%27"+data.dam_id+"%27", function(tableData) {
+
+        tsData = MG.convert.date(tableData.rows, 'date', '%Y-%m-%dT%XZ');
+
+        MG.data_graphic({
+          data: tsData,
+          full_width: true,
+          title: data.name,
+
+          y_label: 'Water Volume (AF)',
+          height: 195,
+
+          baselines: [{value: data.storage_capacity, label: "Reservoir Capacity: " + data.storage_capacity}],
+          max_y: data.storage_capacity,
+          target: "#ts", // the html element that the graphic is inserted in
+          x_accessor: 'date',  // the key that accesses the x value
+          y_accessor: 'reservoir_storage' // the key that accesses the y value
+
+        });
+
+        d3.selectAll('.label')
+          .attr('transform', 'translate(-14, 0) rotate(-90)');
+      });
+}
 
 function main() {
 
@@ -21,29 +47,42 @@ function main() {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
   }).addTo(map);
 
+  //Fix this to just pull data from the table and access first/last dates
+  $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20min(date),%20max(date)%20FROM%20reservoir_reading_extract', function(data) {
+
+      var startDate = (data.rows[0]['min']);
+      var endDate = (data.rows[0]['max']);
+      console.log(startDate);
+      console.log(endDate);
+
+
+  //console.log(dates);//.responseJSON.rows[0]['min']);
+
   //Get today's date in format for SQl query
-  var today = new Date();
-  var dd = today.getDate();
-  var mm = today.getMonth() + 1;
-  var yyyy = today.getFullYear();
-  //var endDate = yyyy + '-' + addZero(mm) + '-' + addZero(dd) + ' 00:00';
-  // Set 5 year window for data
-  var years = 5;
-  var startYear = yyyy - years;
-  //var startDate = startYear + '-' + addZero(mm) + '-' + addZero(dd) + ' 00:00';
-  var endDate = '2016-06-07 00:00';
-  var startDate = '2015-05-06 00:00';
+  // var today = new Date();
+  // var dd = today.getDate();
+  // var mm = today.getMonth() + 1;
+  // var yyyy = today.getFullYear();
+  // //var endDate = yyyy + '-' + addZero(mm) + '-' + addZero(dd) + ' 00:00';
+  // // Set 5 year window for data
+  // var years = 5;
+  // var startYear = yyyy - years;
+  // //var startDate = startYear + '-' + addZero(mm) + '-' + addZero(dd) + ' 00:00';
+  // var endDate = '2016-06-07 00:00';
+  // var startDate = '2015-05-06 00:00';
   // Calculate number of days
   var duration = Math.round((new Date(endDate)- new Date(startDate))/(1000*60*60*24));
+  //var duration = Math.round((endDate- startDate)/(1000*60*60*24));
   console.log(duration);
+
 
   // Get capacity data
   var reservoir_capacity = {
     user_name: 'california-data-collaborative',
     type: 'cartodb',
     sublayers: [{
-      sql: "SELECT * FROM reservoir_levels_1 WHERE (date = ('" + endDate + "'))",
-      //sql: "SELECT * FROM reservoir_levels_1 WHERE (date = ('2016-06-07'))",
+      sql: "SELECT * FROM reservoir_reading_extract ORDER BY storage_capacity DESC",
+      //sql: "SELECT * FROM reservoir_reading_extract WHERE (date = ('2016-06-07'))",
       cartocss: capacityStyles,
       interactivity: ['precent_full', 'name', 'reservoir_storage', 'storage_capacity', 'dam_id', 'date']
     }]
@@ -84,8 +123,8 @@ function main() {
       layer.leafletMap.viz.addOverlay({
           type: 'tooltip',
           layer: sublayers[0],
-          template: '<div class="cartodb-tooltip-content-wrapper dark"> <div class="cartodb-tooltip-content"> <h4>Reservoir Name</h4> <p>{{name}} <h4>Total Capacity (AF)</h4> <p>{{storage_capacity}}</p> </div> </div>',
-          //template: '<div class="cartodb-tooltip-content-wrapper dark"> <div class="cartodb-tooltip-content"> <h4>Reservoir Name</h4> <p>{{name}}</p> <h4>Percent of Capacity</h4> <p>{{precent_full}}</p> <h4>Storage (AF)</h4> <p>{{reservoir_storage}}</p> <h4>Total Capacity (AF)</h4> <p>{{storage_capacity}}</p> </div> </div>',
+          //template: '<div class="cartodb-tooltip-content-wrapper dark"> <div class="cartodb-tooltip-content"> <h4>Reservoir Name</h4> <p>{{name}} <h4>Total Capacity (AF)</h4> <p>{{storage_capacity}}</p> <h4>Current Storage (AF)</h4> <p>{{reservoir_storage}}</p></div> </div>',
+          template: '<div class="cartodb-tooltip-content-wrapper dark"> <div class="cartodb-tooltip-content"> <h4>Reservoir Name</h4> <p>{{name}}</p> <h4>Total Capacity (AF)</h4> <p>{{storage_capacity}}</p> <h4>Current Storage (AF)</h4> <p>{{reservoir_storage}}</p> <h4>Percent of Capacity</h4> <p>{{precent_full}}</p> </div> </div>',
           position: 'bottom|right',
           fields: [{ name: 'name' } ]
       });
@@ -102,51 +141,52 @@ function main() {
         console.log(data.dam_id)
 
       //dev
-      // gets data for selected dam over time
-        $.getJSON("https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20reservoir_levels_1%20WHERE%20dam_id%20=%20%27"+data.dam_id+"%27%20AND%20date%20<=%27"+endDate+"%27%20AND%20date%20>=%27"+startDate+"%27", function(tableData) {
-
-          tsData = MG.convert.date(tableData.rows, 'date', '%Y-%m-%dT%XZ');
-
-          MG.data_graphic({
-            //animate_on_load: true,
-            //description: "test",
-            data: tsData,
-            full_width: true,
-            title: data.name,
-            //buffer: 10,
-            //yax_units_append: true,
-            //yax_units: '(AF)',
-            //y_axis: false,
-            //small_text: true,
-            y_label: 'Water Volume (AF)',
-            height: 195,
-
-            //full_height:true,
-            min_x: new Date(startDate),//new Date('2015-05-06'),
-            max_x: new Date(endDate),//new Date('2016-06-07'),
-            baselines: [{value: data.storage_capacity, label: "Reservoir Capacity: " + data.storage_capacity}],
-            //xax_count: 7,
-            max_y: data.storage_capacity,
-            //max_y: 5000000,
-            target: "#ts", // the html element that the graphic is inserted in
-            x_accessor: 'date',  // the key that accesses the x value
-            y_accessor: 'reservoir_storage' // the key that accesses the y value
-            //   mouseover: function(d, i) {
-            //     var month = d.time.getMonth() + 1;
-            //     d3.select(pageLocation+' svg .mg-active-datapoint')
-            //     .text('Date: ' + month + '/' + d.time.getDate() + ' Time: ' + d.time.getHours() + ':' + addZero(d.time.getMinutes()) + ' Count: '+ d.total)
-            //   },
-            //   markers: peak_marker,
-          });
-
-          d3.selectAll('.label')
-            .attr('transform', 'translate(-14, 0) rotate(-90)');
-        });
+        draw_area_graph(data)
+      // // gets data for selected dam over time
+      //   $.getJSON("https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20reservoir_reading_extract%20WHERE%20dam_id%20=%20%27"+data.dam_id+"%27%20AND%20date%20<=%27"+endDate+"%27%20AND%20date%20>=%27"+startDate+"%27", function(tableData) {
+      //
+      //     tsData = MG.convert.date(tableData.rows, 'date', '%Y-%m-%dT%XZ');
+      //
+      //     MG.data_graphic({
+      //       //animate_on_load: true,
+      //       //description: "test",
+      //       data: tsData,
+      //       full_width: true,
+      //       title: data.name,
+      //       //buffer: 10,
+      //       //yax_units_append: true,
+      //       //yax_units: '(AF)',
+      //       //y_axis: false,
+      //       //small_text: true,
+      //       y_label: 'Water Volume (AF)',
+      //       height: 195,
+      //
+      //       //full_height:true,
+      //       min_x: new Date(startDate),//new Date('2015-05-06'),
+      //       max_x: new Date(endDate),//new Date('2016-06-07'),
+      //       baselines: [{value: data.storage_capacity, label: "Reservoir Capacity: " + data.storage_capacity}],
+      //       //xax_count: 7,
+      //       max_y: data.storage_capacity,
+      //       //max_y: 5000000,
+      //       target: "#ts", // the html element that the graphic is inserted in
+      //       x_accessor: 'date',  // the key that accesses the x value
+      //       y_accessor: 'reservoir_storage' // the key that accesses the y value
+      //       //   mouseover: function(d, i) {
+      //       //     var month = d.time.getMonth() + 1;
+      //       //     d3.select(pageLocation+' svg .mg-active-datapoint')
+      //       //     .text('Date: ' + month + '/' + d.time.getDate() + ' Time: ' + d.time.getHours() + ':' + addZero(d.time.getMinutes()) + ' Count: '+ d.total)
+      //       //   },
+      //       //   markers: peak_marker,
+      //     });
+      //
+      //     d3.selectAll('.label')
+      //       .attr('transform', 'translate(-14, 0) rotate(-90)');
+      //   });
       // end dev
       });
   });
 
-  // $.getJSON("https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20reservoir_levels_1%20WHERE%20date%20<=%27"+endDate+"%27%20AND%20date%20>=%27"+startDate+"%27", function(tableData) {
+  // $.getJSON("https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20reservoir_reading_extract%20WHERE%20date%20<=%27"+endDate+"%27%20AND%20date%20>=%27"+startDate+"%27", function(tableData) {
   //     tsData = MG.convert.date(tableData.rows, 'date', '%Y-%m-%dT%XZ');
   //     console.log(tsData);
   //
@@ -159,7 +199,7 @@ function main() {
       '-torque-time-attribute: "date";',
       '-torque-aggregation-function: "sum(reservoir_storage * 255 / 4973535) ";',//"Math.round((255 * sum(reservoir_storage)) / 4973535) ";',
       '-torque-frame-count: ' + duration + ';',
-      '-torque-animation-duration: 15;',
+      '-torque-animation-duration: 30;',
       '-torque-resolution: 1',
       '}',
       '#reservoirs {',
@@ -365,21 +405,18 @@ function main() {
     type: 'torque',
     options: {
         user_name: 'california-data-collaborative',
-        table_name: 'reservoir_levels_1',
-        //query: "SELECT * FROM reservoir_levels_1",// WHERE (date = ('" + sliderDate + "'))",
-        //sql: "SELECT * FROM reservoir_levels_1 WHERE (date = ('2016-06-07'))",
-        cartocss: CARTOCSS,//storageStyles,
+        table_name: 'reservoir_reading_extract',
+        cartocss: CARTOCSS,
         interactivity: ['reservoir_storage', 'date']
     }
   };
-  //var daily_storage = reservoir_storage.filter(function (d){
-    //  return d.date == String(new Date(endDate));
-  //});
 
   cartodb.createLayer(map, reservoir_storage_layer, options = {https:true, time_slider:true})
     .addTo(map, 1)
     .done(function(layer) {
         layer.on('change:time', function(changes){
+            var currentDate = layer.getTime();
+            console.log(currentDate);
             if (changes.step === layer.provider.getSteps() - 1) {
                     layer.pause();
                     }
@@ -391,5 +428,5 @@ function main() {
     .error(function(err) {
         console.log("Error: " + err);
     });
-
+});
 }
