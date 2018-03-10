@@ -10,6 +10,13 @@ function draw_area_graph(data){
 
         tsData = MG.convert.date(tableData.rows, 'date', '%Y-%m-%dT%XZ');
 
+        // Set vertical marker bars for all Jan 1 dates in range
+        var markers = tsData.filter(function(d) {
+            if (d.date.getMonth() == 0 && d.date.getDate() == 1) {
+                return d.date;
+            };
+        });
+
         MG.data_graphic({
           data: tsData,
           full_width: true,
@@ -22,8 +29,12 @@ function draw_area_graph(data){
           max_y: data.storage_capacity,
           target: "#ts", // the html element that the graphic is inserted in
           x_accessor: 'date',  // the key that accesses the x value
-          y_accessor: 'reservoir_storage' // the key that accesses the y value
-
+          y_accessor: ['reservoir_storage','historical_reservoir_storage'], // the key that accesses the y value
+          legend: ['Recorded Storage Level','Average Historical Level'],
+          legend_target: 'div#custom-color-key',
+          aggregate_rollover: true,
+          decimals: 0,
+          markers: markers
         });
 
         d3.selectAll('.label')
@@ -58,21 +69,11 @@ function main() {
 
   //console.log(dates);//.responseJSON.rows[0]['min']);
 
-  //Get today's date in format for SQl query
-  // var today = new Date();
-  // var dd = today.getDate();
-  // var mm = today.getMonth() + 1;
-  // var yyyy = today.getFullYear();
-  // //var endDate = yyyy + '-' + addZero(mm) + '-' + addZero(dd) + ' 00:00';
-  // // Set 5 year window for data
-  // var years = 5;
-  // var startYear = yyyy - years;
   // //var startDate = startYear + '-' + addZero(mm) + '-' + addZero(dd) + ' 00:00';
   // var endDate = '2016-06-07 00:00';
   // var startDate = '2015-05-06 00:00';
   // Calculate number of days
   var duration = Math.round((new Date(endDate)- new Date(startDate))/(1000*60*60*24));
-  //var duration = Math.round((endDate- startDate)/(1000*60*60*24));
   console.log(duration);
 
 
@@ -81,10 +82,13 @@ function main() {
     user_name: 'california-data-collaborative',
     type: 'cartodb',
     sublayers: [{
-      sql: "SELECT * FROM reservoir_reading_extract ORDER BY storage_capacity DESC",
+      //Edit query to pull as text for formatting in tooltip. Pull storage_capacity as number for size of point also
+      //Nested query to only return last day to show current levels in tooltip and speed up query.
+      sql: "SELECT the_geom, the_geom_webmercator, cartodb_id, TO_CHAR(percent_full*100, '90D00') as percent_full, name, TO_CHAR(reservoir_storage, '9G999G990') as reservoir_storage, storage_capacity, TO_CHAR(storage_capacity, '9G999G990') as storage_capacity_text, dam_id FROM reservoir_reading_extract WHERE date = (SELECT max(date) FROM reservoir_reading_extract) ORDER BY storage_capacity DESC",
+      //sql: "SELECT * FROM reservoir_reading_extract ORDER BY storage_capacity DESC",
       //sql: "SELECT * FROM reservoir_reading_extract WHERE (date = ('2016-06-07'))",
       cartocss: capacityStyles,
-      interactivity: ['precent_full', 'name', 'reservoir_storage', 'storage_capacity', 'dam_id', 'date']
+      interactivity: ['percent_full', 'name', 'reservoir_storage', 'storage_capacity', 'storage_capacity_text', 'dam_id']
     }]
   };
 
@@ -104,8 +108,8 @@ function main() {
         show_title: true,
         title: "Water Volume in Acre-Feet",
         data: [
-        { value: "26,315" },
-        { value: "4,973,535" },
+        { value: "25,000" }, //"26,315" },
+        { value: "5,000,000" }, //"4,973,535" },
         { name: "graph_color", value: "#333" }
         ]
       });
@@ -124,7 +128,7 @@ function main() {
           type: 'tooltip',
           layer: sublayers[0],
           //template: '<div class="cartodb-tooltip-content-wrapper dark"> <div class="cartodb-tooltip-content"> <h4>Reservoir Name</h4> <p>{{name}} <h4>Total Capacity (AF)</h4> <p>{{storage_capacity}}</p> <h4>Current Storage (AF)</h4> <p>{{reservoir_storage}}</p></div> </div>',
-          template: '<div class="cartodb-tooltip-content-wrapper dark"> <div class="cartodb-tooltip-content"> <h4>Reservoir Name</h4> <p>{{name}}</p> <h4>Total Capacity (AF)</h4> <p>{{storage_capacity}}</p> <h4>Current Storage (AF)</h4> <p>{{reservoir_storage}}</p> <h4>Percent of Capacity</h4> <p>{{precent_full}}</p> </div> </div>',
+          template: '<div class="cartodb-tooltip-content-wrapper dark"> <div class="cartodb-tooltip-content"> <h4>Reservoir Name</h4> <p>{{name}}</p> <h4>Total Capacity (AF)</h4> <p>{{storage_capacity_text}}</p> <h4>Current Storage (AF)</h4> <p>{{reservoir_storage}}</p> <h4>Percent of Capacity</h4> <p>{{percent_full}}%</p> </div> </div>',
           position: 'bottom|right',
           fields: [{ name: 'name' } ]
       });
@@ -186,13 +190,6 @@ function main() {
       });
   });
 
-  // $.getJSON("https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20reservoir_reading_extract%20WHERE%20date%20<=%27"+endDate+"%27%20AND%20date%20>=%27"+startDate+"%27", function(tableData) {
-  //     tsData = MG.convert.date(tableData.rows, 'date', '%Y-%m-%dT%XZ');
-  //     console.log(tsData);
-  //
-  //     var reservoir_storage = tsData.filter(function(d) {
-  //         return d.date == String(new Date(endDate));
-  //     });
 
   var CARTOCSS = [
       'Map {',
@@ -415,8 +412,8 @@ function main() {
     .addTo(map, 1)
     .done(function(layer) {
         layer.on('change:time', function(changes){
-            var currentDate = layer.getTime();
-            console.log(currentDate);
+            //var currentDate = layer.getTime();
+            //console.log(currentDate);
             if (changes.step === layer.provider.getSteps() - 1) {
                     layer.pause();
                     }

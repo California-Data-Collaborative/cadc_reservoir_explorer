@@ -39,6 +39,9 @@ body {
   color: #FFFFFF;
 }
 
+.cartodb-timeslider > ul > li.last .slider-wrapper{
+    padding-left: 0px;
+}
 .navbar {
   background: #1f1f1f;
 }
@@ -58,7 +61,7 @@ body {
  width: 33%;
  height: 100%;
  /*position: absolute;*/
- 
+
 }
 
 #cal{
@@ -80,8 +83,8 @@ body {
 }
 
 .cartodb-legend-stack  {
-  border-radius: 0px;}
-
+  border-radius: 0px;
+}
 
 .mg-chart-title{
   margin-top: 10px;
@@ -90,12 +93,42 @@ body {
 .mg-area1-color{
   fill:#2167AB;
 }
-
+.mg-area2-color {
+    fill: #ff471a;
+}
 .mg-line1-color{
   stroke:#2167AB;
 }
+.mg-line2-color{
+  stroke:#ff471a;
+}
+.mg-line1-legend-color {
+    color: #2167AB;
+    fill: #2167AB;
+}
 
-
+.mg-line2-legend-color {
+    color: #ff471a;
+    fill: #ff471a;
+}
+.mg-hover-line1-color {
+    fill: #2167AB;
+}
+.mg-hover-line2-color {
+    fill: #ff471a;
+}
+.mg-baselines text{
+  /* text-align: left;
+  text-anchor: start; */
+  font-size: 1.0rem;
+}
+.mg-markers line {
+    stroke: #817e7e;
+}
+/* .mg-baselines text .anchor{
+    position: absolute;
+    left: 58;
+} */
 /*cal dev*/
 
 /*.ui-widget{
