@@ -14,7 +14,7 @@
 	<link rel="stylesheet" href="bootstrap-3.3.7-dist/css/bootstrap.min.css">
   	<link rel="stylesheet" href="css/metricsgraphics.css">
 	<link rel="stylesheet" href="css/styles.css">
-	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+	<!-- <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" /> -->
 
 </head>
 <body>
@@ -60,10 +60,6 @@
  <div id="container">
  	<!-- <div class="row"> -->
  	<div id="panel">
-			<!-- <div id="cal">
- 				<label for="date"><i class="glyphicon glyphicon-calendar"></i></label>
- 				<input type="text" id="date" readonly>
- 			</div> -->
     	<div id="explanation">
         	<p>The CaDC Reservoir Storage Explorer highlights 37 large reservoirs in California.</p>
 
@@ -75,6 +71,12 @@
 
         	<p>This tool was developed in partnership with Seed Consulting Group as part of an agile feasibility study of the Dodd "Open and Transparent Water Data Act."</p>
 		</div>
+		<div id="cal">
+			<p>Select a date to see total system capacity on that date.</p>
+			<label for="date"><i class="glyphicon glyphicon-calendar"></i></label>
+			<input type="text" id="date" readonly>
+		</div>
+		<div id="total"></div>
  		<div id='ts'></div>
  	</div>
 
@@ -84,10 +86,10 @@
 <!-- /.container -->
 <!-- <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css"> -->
 
-<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-<!-- <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script> -->
-<!-- <link rel="stylesheet" href="css/jquery-bootstrap-datepicker.css"> -->
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<link rel="stylesheet" href="css/jquery-bootstrap-datepicker.css">
 <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script src="../dist/torque.full.uncompressed.js"></script>
 <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script> -->
 <script type="text/javascript" src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
@@ -95,6 +97,7 @@
 <script type="text/javascript" src="js/script.js"></script>
 <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src='js/libs/metricsgraphics.js'></script>
+<script src="https://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
 <script>
 window.onload = main;
 </script>

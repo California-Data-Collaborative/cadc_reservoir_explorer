@@ -60,6 +60,7 @@ body {
  z-index: 10;
  width: 33%;
  height: 100%;
+ overflow-y: scroll;
  /*position: absolute;*/
 
 }
@@ -69,7 +70,15 @@ body {
   background: #C8C7C7;
   padding: 10px;
 }
-
+#total{
+  background: #C8C7C7;
+  padding: 10px;
+  padding-bottom: 10px;
+}
+#total > svg {
+  width: 100%;
+  height: 100%;
+}
 #explanation{
   background: #C8C7C7;
   padding: 10px;
@@ -103,11 +112,15 @@ body {
   stroke:#ff471a;
 }
 .mg-line1-legend-color {
+    text-anchor: end;
+    text-align: right;
     color: #2167AB;
     fill: #2167AB;
 }
 
 .mg-line2-legend-color {
+    text-anchor: end;
+    text-align: right;
     color: #ff471a;
     fill: #ff471a;
 }
@@ -118,17 +131,14 @@ body {
     fill: #ff471a;
 }
 .mg-baselines text{
-  /* text-align: left;
-  text-anchor: start; */
+  text-align: left;
+  text-anchor: start;
   font-size: 1.0rem;
 }
 .mg-markers line {
     stroke: #817e7e;
 }
-/* .mg-baselines text .anchor{
-    position: absolute;
-    left: 58;
-} */
+
 /*cal dev*/
 
 /*.ui-widget{
