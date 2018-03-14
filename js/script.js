@@ -40,7 +40,8 @@ function main() {
         sublayers: [{
           //Nested query to only return last day to show current levels in tooltip and speed up query.
           // Converting numeric fields to characters to use formatting in tooltip
-          sql: "SELECT the_geom, the_geom_webmercator, cartodb_id, TO_CHAR(percent_full*100, '90D00') as percent_full, name, TO_CHAR(reservoir_storage, '9G999G990') as reservoir_storage, storage_capacity, TO_CHAR(storage_capacity, '9G999G990') as storage_capacity_text, dam_id FROM reservoir_reading_extract WHERE date = (SELECT max(date) FROM reservoir_reading_extract) ORDER BY storage_capacity DESC",
+          //sql: "SELECT the_geom, the_geom_webmercator, cartodb_id, TO_CHAR(percent_full*100, '90D00') as percent_full, name, TO_CHAR(reservoir_storage, '9G999G990') as reservoir_storage, storage_capacity, TO_CHAR(storage_capacity, '9G999G990') as storage_capacity_text, dam_id FROM reservoir_reading_extract WHERE date = (SELECT max(date) FROM reservoir_reading_extract) ORDER BY storage_capacity DESC",
+          sql: "SELECT the_geom, the_geom_webmercator, cartodb_id, TO_CHAR(percent_full*100, '90D00') as percent_full, name, TO_CHAR(reservoir_storage, '9G999G990') as reservoir_storage, storage_capacity, TO_CHAR(storage_capacity, '9G999G990') as storage_capacity_text, dam_id, date FROM reservoir_reading_extract ORDER BY storage_capacity DESC",
           //sql: "SELECT * FROM reservoir_reading_extract ORDER BY storage_capacity DESC",
           cartocss: capacityStyles,
           interactivity: ['percent_full', 'name', 'reservoir_storage', 'storage_capacity', 'storage_capacity_text', 'dam_id']
@@ -82,7 +83,7 @@ function main() {
           layer.leafletMap.viz.addOverlay({
               type: 'tooltip',
               layer: sublayers[0],
-              template: '<div class="cartodb-tooltip-content-wrapper dark"> <div class="cartodb-tooltip-content"> <h4>Reservoir Name</h4> <p>{{name}}</p> <h4>Total Capacity (AF)</h4> <p>{{storage_capacity_text}}</p> <h4>Current Storage (AF)</h4> <p>{{reservoir_storage}}</p> <h4>Percent of Capacity</h4> <p>{{percent_full}}%</p> </div> </div>',
+              template: '<div class="cartodb-tooltip-content-wrapper dark"> <div class="cartodb-tooltip-content"> <h4>Reservoir Name</h4> <p>{{name}}</p> <h4>Total Capacity (AF)</h4> <p>{{storage_capacity_text}}</p> <h4>Current Storage (AF)</h4> <p>{{reservoir_storage}}</p> <h4>Percent of Capacity</h4> <p>{{percent_full}}%</p> <h4>Date</h4> <p>{{date}}%</p></div> </div>',
               position: 'bottom|right',
               fields: [{ name: 'name' } ]
           });
@@ -366,6 +367,7 @@ function main() {
             interactivity: ['reservoir_storage', 'date']
         }
       };
+
       // Draw animation layer using torque
       cartodb.createLayer(map, reservoir_storage_layer, options = {https:true, time_slider:true})
         .addTo(map, 1)
@@ -378,7 +380,7 @@ function main() {
                 };
             });
             layer.on('load', function(){
-                layer.play();
+                layer.pause();
             });
         })
         .error(function(err) {
@@ -394,7 +396,7 @@ function main() {
             minDate: new Date(startDate),
             onSelect: function(dateText) {
                 // Remove previous total capacity circles and labels
-                d3.select('svg').remove()
+                d3.select('#totalCircles').remove()
                 // Call query to retrieve and aggregate all reservoirs on that day
                 $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20sum(reservoir_storage)%20as%20stor,%20sum(historical_reservoir_storage)%20as%20hist,%20sum(storage_capacity)%20as%20cap%20FROM%20reservoir_reading_extract%20WHERE%20date%20=%20%27'+this.value+'T00:00:00Z%27;', function(data) {
                     //console.log(data)
@@ -404,7 +406,7 @@ function main() {
                     var totalCapacity = (data.rows[0]['cap']);
 
                     // Create svg to include circles and text labels
-                    var svg = d3.select("#total").append("svg")
+                    var svg = d3.select("#total").append("svg").attr("id", "totalCircles")
                     // Create circles of total system capacity, used storage, and historical average for that day
                     var circles = svg.selectAll("circle")
                         .data(volumes)
@@ -437,6 +439,7 @@ function main() {
             } // end datePicker on select function
         }); // end datepicker jquery
       }); // end datepicker function definition
+
     }); // end jquery request for dates
 
 } // end main
