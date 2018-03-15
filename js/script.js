@@ -1,3 +1,24 @@
+function styleSetup(){
+
+  $(function () {
+     $( '#contextCollapse' ).collapse()
+  });
+
+  $("#argoBrand")
+  .effect("shake", {
+    direction: "up",
+    distance: 5,
+    times: 3
+
+  }, 1000)
+  .animate({
+    color: "#CECECE"
+    },
+    1000
+  )
+   
+}
+
 function addZero(i) {
   if (i < 10) {
     i = "0" + i;
@@ -6,6 +27,7 @@ function addZero(i) {
 }
 
 function main() {
+  styleSetup()
 
   var map = new L.Map('map', {
     center: [38, -119],
@@ -440,7 +462,7 @@ function main() {
                         .attr('y', function(d) {return d.y;})
                         // Max sig figs will show to the hundred thousand gallons
                         .text(function(d) {return (d.title + ": " + d.volume.toLocaleString('en', {maximumSignificantDigits : 3}) ); })
-                        .style("font-size", "1.0rem")
+                        // .style("font-size", "1.0rem")
                         ;
                 }) // end jquery of dam selection
 
