@@ -47,6 +47,13 @@ body {
   padding-right: 0px !important;
 }
 
+.blue{
+  color: #2167AB;
+}
+
+.yellow{
+  color: #FFCC00;
+}
 
 .dropdown-toggle {
   /*font-weight: lighter;*/
