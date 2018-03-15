@@ -62,7 +62,13 @@ body {
  height: 100%;
  overflow-y: scroll;
  /*position: absolute;*/
-
+}
+#panel > * {
+  margin: 15px 0;
+}
+#explanationHeader{
+    background: #C8C7C7;
+    padding: 10px;
 }
 
 #cal{
@@ -72,8 +78,7 @@ body {
 }
 #total{
   background: #C8C7C7;
-  padding: 10px;
-  padding-bottom: 10px;
+  padding-top: 10px;
 }
 #total > svg {
   width: 100%;
@@ -81,10 +86,13 @@ body {
 }
 #explanation{
   background: #C8C7C7;
-  padding: 10px;
-  margin-top: 10px;
+  padding-top: 10px;
+  margin: 0px;
 }
-
+#hist{
+    background: #C8C7C7;
+    padding: 10px;
+}
 #ts {
   /*background: #908F8F;*/
    background: #C8C7C7;
@@ -97,6 +105,8 @@ body {
 
 .mg-chart-title{
   margin-top: 10px;
+  padding: 0px;
+  margin-bottom: 0px;
 }
 
 .mg-area1-color{

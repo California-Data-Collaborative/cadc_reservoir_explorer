@@ -41,7 +41,15 @@ function main() {
           //Nested query to only return last day to show current levels in tooltip and speed up query.
           // Converting numeric fields to characters to use formatting in tooltip
           //sql: "SELECT the_geom, the_geom_webmercator, cartodb_id, TO_CHAR(percent_full*100, '90D00') as percent_full, name, TO_CHAR(reservoir_storage, '9G999G990') as reservoir_storage, storage_capacity, TO_CHAR(storage_capacity, '9G999G990') as storage_capacity_text, dam_id FROM reservoir_reading_extract WHERE date = (SELECT max(date) FROM reservoir_reading_extract) ORDER BY storage_capacity DESC",
-          sql: "SELECT the_geom, the_geom_webmercator, cartodb_id, TO_CHAR(percent_full*100, '90D00') as percent_full, name, TO_CHAR(reservoir_storage, '9G999G990') as reservoir_storage, storage_capacity, TO_CHAR(storage_capacity, '9G999G990') as storage_capacity_text, dam_id, date FROM reservoir_reading_extract ORDER BY storage_capacity DESC",
+          sql: "SELECT the_geom, the_geom_webmercator, cartodb_id, TO_CHAR(percent_full*100, '90D00') as percent_full, \
+          name, TO_CHAR(reservoir_storage, '9G999G990') as reservoir_storage, storage_capacity, \
+          TO_CHAR(storage_capacity, '9G999G990') as storage_capacity_text, dam_id, date \
+          FROM reservoir_reading_extract \
+          WHERE (dam_id, date) in ( \
+            select dam_id, max(date) \
+            from reservoir_reading_extract \
+            group by dam_id) \
+          ORDER BY storage_capacity DESC",
           //sql: "SELECT * FROM reservoir_reading_extract ORDER BY storage_capacity DESC",
           cartocss: capacityStyles,
           interactivity: ['percent_full', 'name', 'reservoir_storage', 'storage_capacity', 'storage_capacity_text', 'dam_id']
@@ -83,7 +91,7 @@ function main() {
           layer.leafletMap.viz.addOverlay({
               type: 'tooltip',
               layer: sublayers[0],
-              template: '<div class="cartodb-tooltip-content-wrapper dark"> <div class="cartodb-tooltip-content"> <h4>Reservoir Name</h4> <p>{{name}}</p> <h4>Total Capacity (AF)</h4> <p>{{storage_capacity_text}}</p> <h4>Current Storage (AF)</h4> <p>{{reservoir_storage}}</p> <h4>Percent of Capacity</h4> <p>{{percent_full}}%</p> <h4>Date</h4> <p>{{date}}%</p></div> </div>',
+              template: '<div class="cartodb-tooltip-content-wrapper dark"> <div class="cartodb-tooltip-content"> <h4>Reservoir Name</h4> <p>{{name}}</p> <h4>Total Capacity (AF)</h4> <p>{{storage_capacity_text}}</p> <h4>Current Storage (AF)</h4> <p>{{reservoir_storage}}</p> <h4>Percent of Capacity</h4> <p>{{percent_full}}%</p> </div> </div>',
               position: 'bottom|right',
               fields: [{ name: 'name' } ]
           });
@@ -107,7 +115,7 @@ function main() {
 
                   // Reduce the data in the time series graph by a factor of 1/3 to draw faster
                   var tsDataFiltered = tsData.filter(function(element, index, array) {
-                      return (index % 3 === 0);
+                      return (index % 3 === 0 && element.reservoir_storage > 0);
                   });
 
                   var markers = tsData.filter(function(d) {

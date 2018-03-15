@@ -60,27 +60,32 @@
  <div id="container">
  	<!-- <div class="row"> -->
  	<div id="panel">
-    	<div id="explanation">
-        	<p>The CaDC Reservoir Storage Explorer shows storage levels for all reservoirs in California over the last 5 years using data from the California Data Exchange Center, operated by the Department of Water Resources.</p>
+    	<div id="explanationHeader" data-toggle="collapse" data-target="#explanation">Project Description
+			<div id="explanation" class = "collapse in">
+	        	<p>The CaDC Reservoir Storage Explorer shows storage levels for all reservoirs in California over the last 5 years using data from the California Data Exchange Center, operated by the Department of Water Resources.</p>
 
-        	<p>Yellow bubbles indicate total reservoir capacities and blue bubbles indicate reservoir storages. Click on the time slider at the bottom of the map to play an animation of reservoir levels over the last 5 years.</p>
+	        	<p>Yellow bubbles indicate total reservoir capacities and blue bubbles indicate reservoir storages. Click on the time slider at the bottom of the map to play an animation of reservoir levels over the last 5 years.</p>
 
-        	<p>Click reservoirs to explore water storage over time, including daily historical averages for each reservoir.</p>
+	        	<p>Click reservoirs to explore water storage over time, including daily historical averages for each reservoir.</p>
 
-        	<p>To download source data, use the Download Data menu at the upper right.</p>
+	        	<p>To download source data, use the Download Data menu at the upper right.</p>
 
-        	<p>This tool was developed in partnership with Seed Consulting Group as part of an agile feasibility study of the Dodd "Open and Transparent Water Data Act."</p>
+	        	<p>This tool was developed in partnership with Seed Consulting Group as part of an agile feasibility study of the Dodd "Open and Transparent Water Data Act."</p>
+			</div>
 		</div>
-		<div id="cal">
+		<div id="cal" data-toggle="collapse" data-target="#total">
+			<header>Total Statewide Storage</header>
 			<p>Click the calendar icon below to select a date and see total statewide storage on that date.</p>
 			<label for="date"><i class="glyphicon glyphicon-calendar"></i></label>
 			<input type="text" id="date" readonly>
+			<div id="total"></div>
 		</div>
-		<div id="total"></div>
- 		<div id='ts'></div>
+		<div id="hist" data-toggle="collapse" data-target="#ts">
+			<header>Five Year Storage per Reservoir</header>
+ 			<div id='ts'></div>
+		</div>
  	</div>
-
- 		<div id="map"></div>
+ 	<div id="map"></div>
 	<!-- </div> -->
 </div>
 <!-- /.container -->
