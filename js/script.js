@@ -26,8 +26,20 @@ function addZero(i) {
   return i;
 }
 
+function addTiles(map){
+    // var map = new L.Map('map', {
+    //   center: [38, -119],
+    //   zoom: 6,
+    // });
+    // Pull tiles from OpenStreetMap
+    L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+    }).addTo(map);
+    // return map;
+}
 
-function drawCapacity(map){
+function drawCapacity(map, selectDate){
+    console.log(selectDate)
     // For storing the sublayers
     var sublayers = [];
     var sublayers_design = []
@@ -45,11 +57,12 @@ function drawCapacity(map){
         WHERE (dam_id, date) in ( \
           select dam_id, max(date) \
           from reservoir_reading_extract \
+          where date <= '"+selectDate+"' \
           group by dam_id) \
         ORDER BY storage_capacity DESC",
         //sql: "SELECT * FROM reservoir_reading_extract ORDER BY storage_capacity DESC",
         cartocss: capacityStyles,
-        interactivity: ['percent_full', 'name', 'reservoir_storage', 'storage_capacity', 'storage_capacity_text', 'dam_id']
+        interactivity: ['percent_full', 'name', 'reservoir_storage', 'storage_capacity', 'storage_capacity_text', 'dam_id', 'date']
       }]
     };
     // Add capacity data layers to map
@@ -87,7 +100,13 @@ function drawCapacity(map){
         layer.leafletMap.viz.addOverlay({
             type: 'tooltip',
             layer: sublayers[0],
-            template: '<div class="cartodb-tooltip-content-wrapper dark"> <div class="cartodb-tooltip-content"> <h4>Reservoir Name</h4> <p>{{name}}</p> <h4>Total Capacity (AF)</h4> <p>{{storage_capacity_text}}</p> <h4>Current Storage (AF)</h4> <p>{{reservoir_storage}}</p> <h4>Percent of Capacity</h4> <p>{{percent_full}}%</p> </div> </div>',
+            template: '<div class="cartodb-tooltip-content-wrapper dark"> \
+            <div class="cartodb-tooltip-content"> \
+            <h4>Reservoir Name</h4> <p>{{name}}</p> \
+            <h4>Total Capacity (AF)</h4> <p>{{storage_capacity_text}}</p> \
+            <h4>Date</h4> <p>'+selectDate.slice(0,10)+'</p> \
+            <h4>Storage (AF)</h4> <p>{{reservoir_storage}}</p> \
+            <h4>Percent of Capacity</h4> <p>{{percent_full}}%</p></div> </div>',
             position: 'bottom|right',
             fields: [{ name: 'name' } ]
         });
@@ -154,8 +173,9 @@ function drawResLineGraph(tableData){
       //});
 }
 
-function drawAnimation(map, duration){
-    // Set styles for animation of reservoir levels over time. Includes toruque definitions and sizing info
+function drawAnimation(map, duration, startDate, selectDate){
+    console.log(selectDate)
+    // Set styles for animation of reservoir levels over time. Includes torque definitions and sizing info
     var CARTOCSS = [
         'Map {',
         '-torque-time-attribute: "date";',
@@ -376,6 +396,10 @@ function drawAnimation(map, duration){
       }
     };
 
+    // calculate start step
+    step = Math.round((new Date(selectDate) - new Date(startDate))/(1000*60*60*24))
+    console.log(step)
+
     // Draw animation layer using torque
     cartodb.createLayer(map, reservoir_storage_layer, options = {https:true, time_slider:true})
       .addTo(map, 1)
@@ -388,7 +412,7 @@ function drawAnimation(map, duration){
               };
           });
           layer.on('load', function(){
-              layer.step = layer.provider.getSteps() - 1;
+              layer.setStep(step);
               layer.pause();
           });
       })
@@ -436,33 +460,34 @@ function drawStateStorage(data){
 
 function main() {
   styleSetup()
-
+  // var map = newMap();
+  // console.log(map)
   var map = new L.Map('map', {
     center: [38, -119],
     zoom: 6,
   });
-
+  addTiles(map);
   // Pull tiles from OpenStreetMap
-  L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
-  }).addTo(map);
+  // L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png', {
+  //   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+  // }).addTo(map);
 
   // Access first/last dates from the table. needed for datepicker bounds and torque animation duration
   $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20min(date),%20max(date)%20FROM%20reservoir_reading_extract', function(data) {
 
       var startDate = (data.rows[0]['min']);
       var endDate = (data.rows[0]['max']);
-      console.log(endDate);
-      console.log(endDate.slice(0,10))
+      // console.log(endDate);
+      // console.log(endDate.slice(0,10))
 
       // Calculate number of days to use as time steps in animation
       var duration = Math.round((new Date(endDate) - new Date(startDate))/(1000*60*60*24))+1;
 
       // Get capacity data
-      drawCapacity(map);
+      drawCapacity(map, endDate);
 
       // Draw Animation of reservoir levels on map
-      drawAnimation(map, duration);
+      drawAnimation(map, duration, startDate, endDate);
 
       // Adjust Statewide storage based on datepicker
       $( function() {
@@ -477,6 +502,18 @@ function main() {
                 d3.select('#totalCircles').remove()
                 // Call query to retrieve and aggregate all reservoirs on that day
                 $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20sum(reservoir_storage)%20as%20stor,%20sum(historical_reservoir_storage)%20as%20hist,%20sum(storage_capacity)%20as%20cap%20FROM%20reservoir_reading_extract%20WHERE%20date%20=%20%27'+this.value+'T00:00:00Z%27;', drawStateStorage)
+                //recreate Map
+
+                map.eachLayer(function(layer){
+                    map.removeLayer(layer);
+                })
+                addTiles(map);
+
+                //redraw animation and set to date
+                drawAnimation(map, duration, startDate, this.value+"T00:00:00Z");
+
+                //redraw capacity circles with storage at that date
+                drawCapacity(map, this.value+"T00:00:00Z");
 
             } // end datePicker on select function
         }); // end datepicker jquery
