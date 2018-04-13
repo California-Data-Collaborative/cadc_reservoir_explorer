@@ -241,7 +241,7 @@ if (typeof jQuery !== 'undefined') {
 
     +function ($) {
       'use strict';
-      
+
       if(typeof $().tooltip == 'function')
         return true;
 
@@ -725,7 +725,7 @@ if (typeof jQuery !== 'undefined') {
 
       if(typeof $().popover == 'function')
         return true;
-          
+
       // POPOVER PUBLIC CLASS DEFINITION
       // ===============================
 
@@ -1997,14 +1997,14 @@ function markers(args) {
                 .attr('y', args.top - 8)
                 .attr('text-anchor', 'middle')
                 .text(function(d) {
-                  
+
                     return d.label;
                 });
 
         preventHorizontalOverlap(gm.selectAll('.mg-marker-text')[0], args);
     }
 
-    
+
     function xPosition(d) {
         return args.scales.X(d[args.x_accessor]);
     }
@@ -2038,7 +2038,10 @@ function markers(args) {
         gb.selectAll('.mg-baselines')
             .data(args.baselines)
             .enter().append('text')
-                .attr('x', args.width-args.right - args.buffer)
+                // Original metricsgraphics script
+                //.attr('x', args.width-args.right - args.buffer)
+                // Mike update
+                .attr('x', args.left + args.buffer)
                 .attr('y', function(d){
                     return args.scales.Y(d.value).toFixed(2);
                 })
