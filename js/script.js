@@ -1,3 +1,5 @@
+var state = {startDate:"", endDate:"", duration:"", capacityLayer:""}
+var capacityLayer;
 function styleSetup(){
 
   $(function () {
@@ -27,19 +29,55 @@ function addZero(i) {
 }
 
 function addTiles(map){
-    // var map = new L.Map('map', {
-    //   center: [38, -119],
-    //   zoom: 6,
-    // });
-    // Pull tiles from OpenStreetMap
+
     L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
     }).addTo(map);
     // return map;
 }
 
-function drawCapacity(map, selectDate){
-    console.log(selectDate)
+function dateRange(data){
+    state.startDate = (data.rows[0]['min']);
+    state.endDate = (data.rows[0]['max']);
+    state.duration = Math.round((new Date(state.endDate) - new Date(state.startDate))/(1000*60*60*24));
+    console.log(state)
+}
+
+function drawLegends(){
+    var legend = new cdb.geo.ui.Legend({
+      type: "custom",
+      data: [
+      { name: "Reservoir Storage", value: "#2167AB" },
+      { name: "Reservoir Capacity", value:"#FFCC00"}
+      ]
+    });
+    var bubble = new cdb.geo.ui.Legend({
+      type: "bubble",
+      show_title: true,
+      title: "Water Volume in Acre-Feet",
+      data: [
+      { value: "25,000" }, //"26,315" },
+      { value: "5,000,000" }, //"4,973,535" },
+      { name: "graph_color", value: "#333" }
+      ]
+    });
+    var stackedLegend = new cdb.geo.ui.StackedLegend({
+      legends: [legend, bubble]
+    });
+    $('#map').append(stackedLegend.render().el);
+}
+
+function drawCapacity(map, selectDate = state.endDate){
+    map.eachLayer(function(layer) {
+        //console.log(layer)
+        // Remove previous capacity layer
+        if ((layer.layers) && (layer.layers.length ==1)){
+            //console.log('removed')
+            map.removeLayer(layer);
+        }
+    })
+
+    //console.log(selectDate)
     // For storing the sublayers
     var sublayers = [];
     var sublayers_design = []
@@ -66,31 +104,10 @@ function drawCapacity(map, selectDate){
       }]
     };
     // Add capacity data layers to map
+
     cartodb.createLayer(map, reservoir_capacity, options = {https:true})
       .addTo(map, 0)
       .done(function(layer) {
-        var legend = new cdb.geo.ui.Legend({
-          type: "custom",
-          data: [
-          { name: "Reservoir Storage", value: "#2167AB" },
-          { name: "Reservoir Capacity", value:"#FFCC00"}
-          ]
-        });
-        var bubble = new cdb.geo.ui.Legend({
-          type: "bubble",
-          show_title: true,
-          title: "Water Volume in Acre-Feet",
-          data: [
-          { value: "25,000" }, //"26,315" },
-          { value: "5,000,000" }, //"4,973,535" },
-          { name: "graph_color", value: "#333" }
-          ]
-        });
-        var stackedLegend = new cdb.geo.ui.StackedLegend({
-          legends: [legend, bubble]
-        });
-        $('#map').append(stackedLegend.render().el);
-
         for (var i = 0; i < layer.getSubLayerCount(); i++) {
             sublayers[i] = layer.getSubLayer(i);
         };
@@ -173,15 +190,14 @@ function drawResLineGraph(tableData){
       //});
 }
 
-function drawAnimation(map, duration, startDate, selectDate){
-    console.log(selectDate)
+function drawAnimation(map, selectDate = state.endDate){
     // Set styles for animation of reservoir levels over time. Includes torque definitions and sizing info
     var CARTOCSS = [
         'Map {',
         '-torque-time-attribute: "date";',
         // Torque allows maximum of 256 values -> scaled from 0 to 255
-        '-torque-aggregation-function: "sum(reservoir_storage * 255 / 4973535) ";',
-        '-torque-frame-count: ' + duration + ';',
+        '-torque-aggregation-function: "max(reservoir_storage * 255 / 4973535) ";',
+        '-torque-frame-count: ' + state.duration + ';',
         '-torque-animation-duration: 30;',
         '-torque-resolution: 1',
         '}',
@@ -397,24 +413,45 @@ function drawAnimation(map, duration, startDate, selectDate){
     };
 
     // calculate start step
-    step = Math.round((new Date(selectDate) - new Date(startDate))/(1000*60*60*24))
-    console.log(step)
+    step = Math.round((new Date(selectDate) - new Date(state.startDate))/(1000*60*60*24))
+    //console.log(step)
 
     // Draw animation layer using torque
     cartodb.createLayer(map, reservoir_storage_layer, options = {https:true, time_slider:true})
       .addTo(map, 1)
       .done(function(layer) {
+          // Pause at end
           layer.on('change:time', function(changes){
-              var currentDate = layer.getTime();
-              //console.log(currentDate);
-              if (changes.step === layer.provider.getSteps() - 1) {
-                      layer.pause();
+              if (changes.step === layer.provider.getSteps()-1) {
+                  layer.pause();
               };
+              //console.log(layer.getStep(), layer.getTime())
           });
+          //Load to last step
           layer.on('load', function(){
               layer.setStep(step);
               layer.pause();
+              //console.log(layer.getTime())
+              // Change date picker when clicking/dragging on slider
+              $('.ui-slider-handle.ui-state-default.ui-corner-all').on('click mousedown mouseup', function(){
+                  var pauseDate = layer.getTime();
+                  var newDate = pauseDate.getUTCFullYear()  + "-" + addZero(pauseDate.getUTCMonth()+1) + "-" + addZero(pauseDate.getUTCDate())
+                  //console.log(pauseDate, newDate)
+                  $("#date").datepicker("setDate", newDate);
+                  $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20sum(reservoir_storage)%20as%20stor,%20sum(historical_reservoir_storage)%20as%20hist,%20sum(storage_capacity)%20as%20cap%20FROM%20reservoir_reading_extract%20WHERE%20date%20=%20%27'+newDate+'T00:00:00Z%27;', drawStateStorage)
+                  drawCapacity(map, newDate)
+              })
           });
+          // Reset date picker on pause
+          layer.on('pause',function(){
+              var pauseDate = layer.getTime();
+              var newDate = pauseDate.getUTCFullYear()  + "-" + addZero(pauseDate.getUTCMonth()+1) + "-" + addZero(pauseDate.getUTCDate())
+              $("#date").datepicker("setDate", newDate);
+              $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20sum(reservoir_storage)%20as%20stor,%20sum(historical_reservoir_storage)%20as%20hist,%20sum(storage_capacity)%20as%20cap%20FROM%20reservoir_reading_extract%20WHERE%20date%20=%20%27'+newDate+'T00:00:00Z%27;', drawStateStorage)
+              drawCapacity(map, newDate)
+          });
+
+
       })
       // .error(function(err) {
       //     console.log("Error: " + err);
@@ -422,6 +459,9 @@ function drawAnimation(map, duration, startDate, selectDate){
 }
 
 function drawStateStorage(data){
+    // Remove previous total capacity circles and labels
+    d3.select('#totalCircles').remove()
+
     var volumes = [{title: "Total Capacity", volume: data.rows[0]['cap'], fill: "#FFCC00", stroke: "none", y: 20},
                     {title: "Recorded Storage", volume: data.rows[0]['stor'], fill: "#2167AB", stroke: "none", y: 40},
                     {title: "Historical Average", volume: data.rows[0]['hist'], fill: "none", stroke: "#ff471a", y: 60}]
@@ -458,6 +498,39 @@ function drawStateStorage(data){
         ;
 }
 
+function drawDatePicker(map) {
+    // Use the date picker to see total statewide volumes for a specific day
+    $("#date").datepicker({
+      dateFormat: "yy-mm-dd",
+      // Allowable dates defined by original query of table stored in Carto
+      maxDate: state.endDate.slice(0,10),
+      minDate: state.startDate.slice(0,10),
+      onSelect: function(dateText){
+          // Remove previous total capacity circles and labels
+          d3.select('#totalCircles').remove()
+          // Call query to retrieve and aggregate all reservoirs on that day
+          $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20sum(reservoir_storage)%20as%20stor,%20sum(historical_reservoir_storage)%20as%20hist,%20sum(storage_capacity)%20as%20cap%20FROM%20reservoir_reading_extract%20WHERE%20date%20=%20%27'+this.value+'T00:00:00Z%27;', drawStateStorage)
+
+          //recreate Map
+          map.eachLayer(function(layer){
+              //console.log(layer)
+              map.removeLayer(layer);
+          })
+          addTiles(map);
+          //reset animation to the selected value
+          //console.log("date picker date", this.value+"T00:00:00Z")
+          drawAnimation(map, this.value+"T00:00:00Z");
+
+      } // end datePicker on select function
+  }); // end datepicker jquery
+
+  // Set start value for date picker as max date
+  $("#date").datepicker("setDate", state.endDate.slice(0,10));
+  //drawAnimation(map);
+  $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20sum(reservoir_storage)%20as%20stor,%20sum(historical_reservoir_storage)%20as%20hist,%20sum(storage_capacity)%20as%20cap%20FROM%20reservoir_reading_extract%20WHERE%20date%20=%20%27'+ state.endDate +'T00:00:00Z%27;', drawStateStorage)
+
+}; // end datepicker function definition
+
 function main() {
   styleSetup()
   // var map = newMap();
@@ -467,63 +540,24 @@ function main() {
     zoom: 6,
   });
   addTiles(map);
-  // Pull tiles from OpenStreetMap
-  // L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png', {
-  //   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
-  // }).addTo(map);
 
-  // Access first/last dates from the table. needed for datepicker bounds and torque animation duration
-  $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20min(date),%20max(date)%20FROM%20reservoir_reading_extract', function(data) {
+  // Make sure this runs first to get global variables
+  jQuery.ajaxSetup({async:false});
+  // Define date range and set global variables
+  $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20min(date),%20max(date)%20FROM%20reservoir_reading_extract', dateRange)
+  //$.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=ALTER%20TABLE%20reservoir_reading_extract%20ADD%20dateUTC%20timestamp')
+  //$.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=UPDATE%20reservoir_reading_extract%20SET%20dateUTC%20=%20date+"T00:00:00Z"FROM%20reservoir_reading_extract')
+  jQuery.ajaxSetup({async:true});
 
-      var startDate = (data.rows[0]['min']);
-      var endDate = (data.rows[0]['max']);
-      // console.log(endDate);
-      // console.log(endDate.slice(0,10))
+  // Get capacity data
+  //drawCapacity(map, state.endDate);
 
-      // Calculate number of days to use as time steps in animation
-      var duration = Math.round((new Date(endDate) - new Date(startDate))/(1000*60*60*24))+1;
+  // Draw Animation of reservoir levels on map
+  drawAnimation(map);
 
-      // Get capacity data
-      drawCapacity(map, endDate);
+  // Adjust Statewide storage based on datepicker
+  drawDatePicker(map);
 
-      // Draw Animation of reservoir levels on map
-      drawAnimation(map, duration, startDate, endDate);
-
-      // Adjust Statewide storage based on datepicker
-      $( function() {
-          // Use the date picker to see total statewide volumes for a specific day
-          $( "#date" ).datepicker({
-            dateFormat: "yy-mm-dd",
-            // Allowable dates defined by original query of table stored in Carto
-            maxDate: endDate.slice(0,10),
-            minDate: startDate.slice(0,10),
-            onSelect: function(dateText) {
-                // Remove previous total capacity circles and labels
-                d3.select('#totalCircles').remove()
-                // Call query to retrieve and aggregate all reservoirs on that day
-                $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20sum(reservoir_storage)%20as%20stor,%20sum(historical_reservoir_storage)%20as%20hist,%20sum(storage_capacity)%20as%20cap%20FROM%20reservoir_reading_extract%20WHERE%20date%20=%20%27'+this.value+'T00:00:00Z%27;', drawStateStorage)
-                //recreate Map
-
-                map.eachLayer(function(layer){
-                    map.removeLayer(layer);
-                })
-                addTiles(map);
-
-                //redraw animation and set to date
-                drawAnimation(map, duration, startDate, this.value+"T00:00:00Z");
-
-                //redraw capacity circles with storage at that date
-                drawCapacity(map, this.value+"T00:00:00Z");
-
-            } // end datePicker on select function
-        }); // end datepicker jquery
-
-        // Set start value for date picker as max date
-        $("#date").datepicker("setDate",endDate.slice(0,10));
-        $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20sum(reservoir_storage)%20as%20stor,%20sum(historical_reservoir_storage)%20as%20hist,%20sum(storage_capacity)%20as%20cap%20FROM%20reservoir_reading_extract%20WHERE%20date%20=%20%27'+endDate+'%27;', drawStateStorage)
-
-      }); // end datepicker function definition
-
-    }); // end jquery request for dates
+  drawLegends();
 
 } // end main
