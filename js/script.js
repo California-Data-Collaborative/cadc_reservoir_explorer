@@ -50,19 +50,29 @@ function drawCapacity(map, selectDate){
       sublayers: [{
         // Nested query to only return last record for each reservoir to show current levels in tooltip and speed up query.
         // Converting numeric fields to characters to use formatting in tooltip
-        sql: "SELECT the_geom, the_geom_webmercator, cartodb_id, TO_CHAR(percent_full*100, '90D00') as percent_full, \
-        name, TO_CHAR(reservoir_storage, '9G999G990') as reservoir_storage, storage_capacity, \
-        TO_CHAR(storage_capacity, '9G999G990') as storage_capacity_text, dam_id, date \
-        FROM reservoir_reading_extract \
-        WHERE (dam_id, date) in ( \
-          select dam_id, max(date) \
-          from reservoir_reading_extract \
-          where date <= '"+selectDate+"' \
-          group by dam_id) \
+        sql: "SELECT\
+          the_geom,\
+          the_geom_webmercator,\
+          cartodb_id,\
+          TO_CHAR(percent_full*100, '90D00') as percent_full,\
+          supply_name,\
+          TO_CHAR(supply_storage, '9G999G990') as supply_storage,\
+          storage_capacity,\
+          TO_CHAR(storage_capacity, '9G999G990') as storage_capacity_text,\
+          supply_data_source_id,\
+          supply_reading_date\
+        FROM supply_reading_extract\
+        WHERE (supply_data_source_id, supply_reading_date) in (\
+          SELECT\
+            supply_data_source_id,\
+            MAX(supply_reading_date)\
+        FROM supply_reading_extract\
+          WHERE supply_reading_date <= '"+selectDate+"'\
+          GROUP BY supply_data_source_id)\
         ORDER BY storage_capacity DESC",
-        //sql: "SELECT * FROM reservoir_reading_extract ORDER BY storage_capacity DESC",
+        //sql: "SELECT * FROM reservoir_reading_extract ORDER BY storage_capacity DESC,
         cartocss: capacityStyles,
-        interactivity: ['percent_full', 'name', 'reservoir_storage', 'storage_capacity', 'storage_capacity_text', 'dam_id', 'date']
+        interactivity: ['percent_full', 'supply_name', 'supply_storage', 'storage_capacity', 'storage_capacity_text', 'supply_data_source_id', 'supply_reading_date']
       }]
     };
     // Add capacity data layers to map
@@ -102,10 +112,10 @@ function drawCapacity(map, selectDate){
             layer: sublayers[0],
             template: '<div class="cartodb-tooltip-content-wrapper dark"> \
             <div class="cartodb-tooltip-content"> \
-            <h4>Reservoir Name</h4> <p>{{name}}</p> \
+            <h4>Reservoir Name</h4> <p>{{supply_name}}</p> \
             <h4>Total Capacity (AF)</h4> <p>{{storage_capacity_text}}</p> \
             <h4>Date</h4> <p>'+selectDate.slice(0,10)+'</p> \
-            <h4>Storage (AF)</h4> <p>{{reservoir_storage}}</p> \
+            <h4>Storage (AF)</h4> <p>{{supply_storage}}</p> \
             <h4>Percent of Capacity</h4> <p>{{percent_full}}%</p></div> </div>',
             position: 'bottom|right',
             fields: [{ name: 'name' } ]
@@ -120,9 +130,9 @@ function drawCapacity(map, selectDate){
         });
 
         sublayers[0].on('featureClick', function(e, latlng, pos, data) {
-            console.log(data.dam_id)
+            console.log(data.supply_data_source_id)
             // Get data for dam and draw line graph
-            $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20reservoir_reading_extract%20WHERE%20dam_id%20=%20%27'+data.dam_id+'%27;', drawResLineGraph)
+            $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20supply_reading_extract%20WHERE%20supply_data_source_id%20=%20%27'+data.supply_data_source_id+'%27;', drawResLineGraph)
 
         }); // end featureClick
 
@@ -133,16 +143,16 @@ function drawResLineGraph(tableData){
     // Get data for dam
     //$.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20reservoir_reading_extract%20WHERE%20dam_id%20=%20%27'+dam_id+'%27;', function(tableData) {
 
-        tsData = MG.convert.date(tableData.rows, 'date', '%Y-%m-%dT%XZ');
+        tsData = MG.convert.date(tableData.rows, 'supply_reading_date', '%Y-%m-%dT%XZ');
 
         // Reduce the data in the time series graph by a factor of 1/3 to draw faster
         var tsDataFiltered = tsData.filter(function(element, index, array) {
-            return (index % 3 === 0 && element.reservoir_storage > 0);
+            return (index % 3 === 0 && element.supply_storage > 0);
         });
 
         var markers = tsData.filter(function(d) {
-            if (d.date.getMonth() == 0 && d.date.getDate() == 1) {
-                return d.date;
+            if (d.supply_reading_date.getMonth() == 0 && d.supply_reading_date.getDate() == 1) {
+                return d.supply_reading_date;
             };
         });
         //console.log(markers)
@@ -151,7 +161,7 @@ function drawResLineGraph(tableData){
         MG.data_graphic({
           data: tsDataFiltered,
           full_width: true,
-          title: tsDataFiltered[0].name,
+          title: tsDataFiltered[0].supply_name,
 
           y_label: 'Water Volume (AF)',
           height: 195,
@@ -159,8 +169,8 @@ function drawResLineGraph(tableData){
           baselines: [{value: tsDataFiltered[0].storage_capacity, label: "Reservoir Capacity: " + tsDataFiltered[0].storage_capacity}],
           max_y: tsDataFiltered[0].storage_capacity,
           target: "#ts", // the html element that the graphic is inserted in
-          x_accessor: 'date',  // the key that accesses the x value
-          y_accessor: ['reservoir_storage','historical_reservoir_storage'], // the key that accesses the y value
+          x_accessor: 'supply_reading_date',  // the key that accesses the x value
+          y_accessor: ['supply_storage','historical_supply_storage'], // the key that accesses the y value
           legend: ['Recorded','Average'],
           //legend_target: 'div#custom-color-key',
           aggregate_rollover: true,
@@ -178,9 +188,9 @@ function drawAnimation(map, duration, startDate, selectDate){
     // Set styles for animation of reservoir levels over time. Includes torque definitions and sizing info
     var CARTOCSS = [
         'Map {',
-        '-torque-time-attribute: "date";',
+        '-torque-time-attribute: "supply_reading_date";',
         // Torque allows maximum of 256 values -> scaled from 0 to 255
-        '-torque-aggregation-function: "sum(reservoir_storage * 255 / 4973535) ";',
+        '-torque-aggregation-function: "sum(supply_storage * 255 / 4973535) ";',
         '-torque-frame-count: ' + duration + ';',
         '-torque-animation-duration: 30;',
         '-torque-resolution: 1',
@@ -390,9 +400,9 @@ function drawAnimation(map, duration, startDate, selectDate){
       type: 'torque',
       options: {
           user_name: 'california-data-collaborative',
-          table_name: 'reservoir_reading_extract',
+          table_name: 'supply_reading_extract',
           cartocss: CARTOCSS,
-          interactivity: ['reservoir_storage', 'date']
+          interactivity: ['supply_storage', 'supply_reading_date']
       }
     };
 
@@ -473,7 +483,7 @@ function main() {
   // }).addTo(map);
 
   // Access first/last dates from the table. needed for datepicker bounds and torque animation duration
-  $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20min(date),%20max(date)%20FROM%20reservoir_reading_extract', function(data) {
+  $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20min(supply_reading_date),%20max(supply_reading_date)%20FROM%20supply_reading_extract', function(data) {
 
       var startDate = (data.rows[0]['min']);
       var endDate = (data.rows[0]['max']);
@@ -501,7 +511,7 @@ function main() {
                 // Remove previous total capacity circles and labels
                 d3.select('#totalCircles').remove()
                 // Call query to retrieve and aggregate all reservoirs on that day
-                $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20sum(reservoir_storage)%20as%20stor,%20sum(historical_reservoir_storage)%20as%20hist,%20sum(storage_capacity)%20as%20cap%20FROM%20reservoir_reading_extract%20WHERE%20date%20=%20%27'+this.value+'T00:00:00Z%27;', drawStateStorage)
+                $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20sum(supply_storage)%20as%20stor,%20sum(historical_supply_storage)%20as%20hist,%20sum(storage_capacity)%20as%20cap%20FROM%20supply_reading_extract%20WHERE%20supply_reading_date%20=%20%27'+this.value+'T00:00:00Z%27;', drawStateStorage)
                 //recreate Map
 
                 map.eachLayer(function(layer){
@@ -520,7 +530,7 @@ function main() {
 
         // Set start value for date picker as max date
         $("#date").datepicker("setDate",endDate.slice(0,10));
-        $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20sum(reservoir_storage)%20as%20stor,%20sum(historical_reservoir_storage)%20as%20hist,%20sum(storage_capacity)%20as%20cap%20FROM%20reservoir_reading_extract%20WHERE%20date%20=%20%27'+endDate+'%27;', drawStateStorage)
+        $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20sum(supply_storage)%20as%20stor,%20sum(historical_supply_storage)%20as%20hist,%20sum(storage_capacity)%20as%20cap%20FROM%20supply_reading_extract%20WHERE%20supply_reading_date%20=%20%27'+endDate+'%27;', drawStateStorage)
 
       }); // end datepicker function definition
 
