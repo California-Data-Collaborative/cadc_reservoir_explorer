@@ -1,0 +1,168 @@
+body {
+  background-color: #343a40;
+  border-radius: 4px !important;
+}
+
+.navbar {
+  color: white;
+  margin-bottom: 0px;
+}
+
+#argoBrand{
+  font-weight: lighter;
+  width: 200px;
+  color: #66afe9;
+  float: right;
+  text-align: right;
+  padding-right: 0px !important;
+}
+
+#detailPanel {
+  background-color: #f8f9fa;
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+.ui-autocomplete {
+  padding: 6px 12px;
+  border-radius: 4px;
+  webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+}
+
+.ui-autocomplete .ui-state-hover,
+.ui-autocomplete .ui-widget-content .ui-state-hover,
+.ui-autocomplete .ui-widget-header .ui-state-hover,
+.ui-autocomplete .ui-state-focus,
+.ui-autocomplete .ui-widget-content .ui-state-focus,
+.ui-autocomplete .ui-widget-header .ui-state-focus,
+.ui-autocomplete .ui-button:hover,
+.ui-autocomplete .ui-button:focus {
+  padding: 1px 2px;
+  border-radius: 4px;
+  webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  background-color: #eee !important;
+  border: none !important;
+}
+
+#ts {
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  color: #555;
+  text-align: center;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#ts_legend {
+  text-align:center;
+  padding: 5px;
+}
+
+.mg-area1-color{
+  fill:#2167AB;
+}
+.mg-area2-color {
+  fill: #ff471a;
+}
+.mg-line1-color{
+  stroke:#2167AB;
+}
+.mg-line2-color{
+  stroke:#ff471a;
+}
+.mg-line1-legend-color {
+  text-anchor: end;
+  text-align: right;
+  color: #2167AB;
+  fill: #2167AB;
+}
+
+.mg-line2-legend-color {
+  text-anchor: end;
+  text-align: right;
+  color: #ff471a;
+  fill: #ff471a;
+}
+.mg-hover-line1-color {
+  fill: #2167AB;
+}
+.mg-hover-line2-color {
+  fill: #ff471a;
+}
+
+.mg-baselines line{
+  stroke: #FFCC00;
+}
+
+.mg-baselines text{
+  /* font-size: 0.9rem; */
+}
+
+.mg-x-axis text,
+.mg-y-axis text {
+  fill: #555;
+  /* font-size: 0.9rem; */
+  opacity: .75;
+}
+
+.mg-markers line {
+  stroke: #817e7e;
+}
+
+.mg-markers text {
+  /* font-size: 0.9rem; */
+}
+
+.mg-active-datapoint {
+  fill: #555;
+  font-size: 0.9rem;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+#time_slider {
+  background-color: #eee;
+}
+
+.panel-group {
+  color: #555;
+  background-color: #eee;
+  border-radius: 4px;
+}
+
+.panel-body {
+}
+
+#mapPanel {
+  height: 100vh;
+  padding: 0 !important;
+}
+
+#map {
+  width: auto;
+  height: 100%;
+  position: relative;
+}
+
+.cartodb-timeslider {
+  margin-bottom: 0px !important;
+  bottom: 35px!important;
+}
+
+.slider-wrapper {
+  width: auto!important;
+
+}
+
+.cartodb-timeslider > ul > li.last > div > div{
+  /* background-color: red!important; */
+}
+
+.cartodb-logo{
+   display:none!important;
+}

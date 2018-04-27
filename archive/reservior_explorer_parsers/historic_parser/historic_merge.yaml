@@ -1,0 +1,35 @@
+###
+# historic_merge
+###
+
+extract:
+  - step: Emit SQL Call
+    action: extract.emit.EmitPaths
+    paths:
+      - >
+        SELECT a.Dam_ABBR,
+               Dam_Name,
+               Date,
+               Latitude,
+               Longitude,
+               Capacity,
+               STORAGE,
+               RES_ELE
+        FROM  
+              (SELECT Dam_ABBR,
+                      Dam_Name,
+                      Latitude,
+                      Longitude,
+                      Capacity
+              FROM  capacity_and_latlong) a
+              INNER JOIN
+              (SELECT Dam_ABBR,
+                      Date,
+                      STORAGE,
+                      RES_ELE
+              FROM  historic) b
+              ON b.Dam_ABBR = a.Dam_ABBR;
+
+  - step: Apply the Codec on the historic_merge
+    action: parsekit.ApplyCodec
+    codec: historic_merge

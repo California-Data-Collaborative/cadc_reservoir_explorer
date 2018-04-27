@@ -1,0 +1,15 @@
+###
+# latlon
+# 2017-01-14
+###
+
+extract:
+
+  - step: Download Page Including Lat/Lon of Reservoirs
+    action: extract.source.http.DownloadFiles
+    fetch:
+      - http://cdec.water.ca.gov/misc/daily_res.html
+
+  - step: Apply the Codec on the Lat/Lon Page
+    action: parsekit.ApplyCodec
+    codec: latlon

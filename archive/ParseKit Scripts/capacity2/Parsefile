@@ -1,0 +1,16 @@
+###
+# Parsefile for capacity
+# 2017-01-14
+###
+
+name: capacity
+description: "The Storage Capacity of Reservoirs"
+maintainers:
+  - Dongjie Fan <df1676@nyu.edu>
+version: "0.1.0"
+license: none
+source_urls:
+  - "http://cdec.water.ca.gov/misc/resinfo.html"
+
+extract:
+  - data.yaml

@@ -1,7 +1,0 @@
-parsekit==1.2.0
-datetime
-re
-pandas
-sqlite3
-BeautifulSoup
-copy

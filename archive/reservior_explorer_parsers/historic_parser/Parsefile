@@ -1,0 +1,23 @@
+###
+# Parsefile for historic data of dams
+#
+#  - historic_merge.yaml
+###
+
+name: historic_parser
+description: "This parser parses the dam infromation from 01/01/2014 to [prod date]"
+maintainers:
+  - Vishwajeet Shelat <vys217@nyu.edu>
+  - Dongjie Fan <df1676@nyu.edu> 
+  - David Marulli <david@argolabs.org>
+version: "0.1.0"
+license: none
+source_urls:
+  - "http://cdec.water.ca.gov/reservoir.html"
+
+extract:
+  - latlon.yaml
+  - capacity.yaml
+  - merge.yaml
+  - historic_dam.yaml
+  - historic_merge.yaml

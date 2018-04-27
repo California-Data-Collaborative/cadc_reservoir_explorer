@@ -57,7 +57,7 @@ function drawLegends(){
       title: "Water Volume in Acre-Feet",
       data: [
       { value: "25,000" }, //"26,315" },
-      { value: "5,000,000" }, //"4,973,535" },
+      { value: "30,000,000" }, //"4,973,535" },
       { name: "graph_color", value: "#333" }
       ]
     });
