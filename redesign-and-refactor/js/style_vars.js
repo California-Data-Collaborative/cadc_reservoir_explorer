@@ -11,7 +11,7 @@ var capacityStyles = `
 
   marker-allow-overlap: true;
   marker-clip: false;
-  marker-width: ramp([storage_capacity], 5, 98, 256, equal);
+  marker-width: ramp([sqrt_storage_capacity], 5, 98, 256, equal);
   marker-fill: #FFCC00;
   [supply_name = 'whole-sierra'] {
     marker-fill: white;

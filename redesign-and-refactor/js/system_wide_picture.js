@@ -53,7 +53,7 @@ function draw_systemwide_time_series(system, target, initialize = false) {
       } else {
         tsData = tableData.rows
       }
-      
+
 
       var tsDataFiltered = tsData.filter(function(element, index, array) {
         return (index % 10 === 0 && element.supply_storage > 0);

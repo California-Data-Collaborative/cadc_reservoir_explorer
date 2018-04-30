@@ -205,6 +205,7 @@ var sql = new cartodb.SQL( {
       supply_name,\
       TO_CHAR(supply_storage, '9G999G990') as supply_storage,\
       storage_capacity,\
+      SQRT(storage_capacity) sqrt_storage_capacity,\
       TO_CHAR(storage_capacity, '9G999G990') as storage_capacity_text,\
       \
       supply_reading_date\
@@ -251,11 +252,11 @@ var sql = new cartodb.SQL( {
         layer: sublayers[0],
         template: '<div class="cartodb-tooltip-content-wrapper dark"> \
         <div class="cartodb-tooltip-content"> \
-        <h4>Date</h4> <p>'+selectedDate.slice(0,10)+'</p> \
-        <h4>Supply Name</h4> <p>{{supply_name}}</p> \
-        <h4>Storage (AF)</h4> <p>{{supply_storage}}</p> \
+        <!--<h4>Date</h4> <p>'+selectedDate.slice(0,10)+'</p>--> \
+        <h4>Source Name</h4> <p>{{supply_name}}</p> \
+        <!--<h4>Storage (AF)</h4> <p>{{supply_storage}}</p> \
         <h4>Capacity (AF)</h4> <p>{{storage_capacity_text}}</p> \
-        <h4>Percent of Capacity</h4> <p>{{percent_full}}%</p></div> </div>',
+        <h4>Percent of Capacity</h4> <p>{{percent_full}}%</p></div> </div>-->',
         position: 'bottom|right',
         fields: [{ name: 'name' } ]
       });
@@ -597,7 +598,7 @@ var sql = new cartodb.SQL( {
         // WHERE supply_reading_date = '"+state.selectedDate+"'\
         // ORDER BY storage_capacity DESC"
         // sublayers[0].setSQL(query_1);
-        drawCapacity(map, newDate)
+        // drawCapacity(map, newDate)
 
       })
       var slider = map.viz.timeSlider;
