@@ -155,7 +155,7 @@ function drawCapacity(map, selectedDate = state.maxDate){
         map.panTo(latLng);
 
         // summarySentence_dm(usagedifference, percentdifference, target_af, hrName, usage, uncertainty, place_change = true);
-        $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20supply_reading_extract%20WHERE%20supply_name%20=%20%27'+state.selectedSupply+'%27;', drawResLineGraph)
+        $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20supply_reading_extract%20WHERE%20supply_name%20=%20%27'+state.selectedSupply+'%27;', function(d){ drawResLineGraph(d, "#ts_chart")})
 
       })
 
@@ -197,42 +197,42 @@ var sql = new cartodb.SQL( {
     sublayers: [{
       // Nested query to only return last record for each reservoir to show current levels in tooltip and speed up query.
       // Converting numeric fields to characters to use formatting in tooltip
-      // sql: "SELECT\
-      // the_geom,\
-      // the_geom_webmercator,\
-      // cartodb_id,\
-      // TO_CHAR(percent_full*100, '90D00') as percent_full,\
-      // supply_name,\
-      // TO_CHAR(supply_storage, '9G999G990') as supply_storage,\
-      // storage_capacity,\
-      // TO_CHAR(storage_capacity, '9G999G990') as storage_capacity_text,\
-      // supply_data_source_id,\
-      // supply_reading_date\
-      // FROM supply_reading_extract\
-      // WHERE (supply_data_source_id, supply_reading_date) in (\
-      //   SELECT\
-      //   supply_data_source_id,\
-      //   MAX(supply_reading_date)\
-      //   FROM supply_reading_extract\
-      //   WHERE supply_reading_date <= '"+selectedDate+"'\
-      //   GROUP BY supply_data_source_id)\
-      //   ORDER BY storage_capacity DESC",
-        sql: "SELECT\
-        the_geom,\
-        the_geom_webmercator,\
-        cartodb_id,\
-        TO_CHAR(percent_full*100, '90D00') as percent_full,\
+      sql: "SELECT\
+      the_geom,\
+      the_geom_webmercator,\
+      cartodb_id,\
+      TO_CHAR(percent_full*100, '90D00') as percent_full,\
+      supply_name,\
+      TO_CHAR(supply_storage, '9G999G990') as supply_storage,\
+      storage_capacity,\
+      TO_CHAR(storage_capacity, '9G999G990') as storage_capacity_text,\
+      \
+      supply_reading_date\
+      FROM supply_reading_extract\
+      WHERE (supply_name, supply_reading_date) in (\
+        SELECT\
         supply_name,\
-        TO_CHAR(supply_storage, '9G999G990') as supply_storage,\
-        storage_capacity,\
-        TO_CHAR(storage_capacity, '9G999G990') as storage_capacity_text,\
-        supply_data_source_id,\
-        supply_reading_date\
+        MAX(supply_reading_date)\
         FROM supply_reading_extract\
-        WHERE supply_reading_date = '"+selectedDate+"'ORDER BY storage_capacity DESC",
+        WHERE supply_reading_date <= '"+selectedDate+"'\
+        GROUP BY supply_name)\
+        ORDER BY storage_capacity DESC",
+        // sql: "SELECT\
+        // the_geom,\
+        // the_geom_webmercator,\
+        // cartodb_id,\
+        // TO_CHAR(percent_full*100, '90D00') as percent_full,\
+        // supply_name,\
+        // TO_CHAR(supply_storage, '9G999G990') as supply_storage,\
+        // storage_capacity,\
+        // TO_CHAR(storage_capacity, '9G999G990') as storage_capacity_text,\
+        // supply_name,\
+        // supply_reading_date\
+        // FROM supply_reading_extract\
+        // WHERE supply_reading_date = '"+selectedDate+"'ORDER BY storage_capacity DESC",
         // sql: "SELECT * FROM supply_reading_extract WHERE supply_reading_date = '"+selectedDate+"' ORDER BY storage_capacity DESC",
         cartocss: capacityStyles,
-        interactivity: ['percent_full', 'supply_name', 'supply_storage', 'storage_capacity', 'storage_capacity_text', 'supply_data_source_id', 'supply_reading_date', 'cartodb_id']
+        interactivity: ['percent_full', 'supply_name', 'supply_storage', 'storage_capacity', 'storage_capacity_text', 'supply_name', 'supply_reading_date', 'cartodb_id']
       }]
     };
     // Add capacity data layers to map
@@ -269,19 +269,19 @@ var sql = new cartodb.SQL( {
       });
 
       sublayers[0].on('featureClick', function(e, latlng, pos, data) {
-        // console.log(data.supply_data_source_id)
+        // console.log(data.supply_name)
         // console.log(data)
         showFeature(data.cartodb_id)
-        state.selectedSupply = data.supply_data_source_id
+        state.selectedSupply = data.supply_name
         // Get data for dam and draw line graph
-        $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20supply_reading_extract%20WHERE%20supply_data_source_id%20=%20%27'+state.selectedSupply+'%27;', drawResLineGraph)
+        $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20supply_reading_extract%20WHERE%20supply_name%20=%20%27'+state.selectedSupply+'%27;', function(d){ drawResLineGraph(d, "#ts_chart")})
 
       }); // end featureClick
 
     }); // end .done method of capacity circles
   }
 
-  function drawResLineGraph(tableData){
+  function drawResLineGraph(tableData, target){
     // Get data for dam
     //$.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20reservoir_reading_extract%20WHERE%20dam_id%20=%20%27'+dam_id+'%27;', function(tableData) {
 
@@ -289,7 +289,7 @@ var sql = new cartodb.SQL( {
 
     // Reduce the data in the time series graph by a factor of 1/3 to draw faster
     var tsDataFiltered = tsData.filter(function(element, index, array) {
-      return (index % 3 === 0 && element.supply_storage > 0);
+      return (index % 10 === 0 && element.supply_storage > 0);
     });
 
     // var markers = tsData.filter(function(d) {
@@ -298,7 +298,7 @@ var sql = new cartodb.SQL( {
     //   };
     // });
 
-    var marker = [{"supply_reading_date": new Date(state.selectedDate), "label": "Date"}]
+    var marker = [{"supply_reading_date": new Date(state.selectedDate), "label": state.selectedDate}]
 
     // console.log(tsDataFiltered)
     $('#supplyName').val(tsDataFiltered[0].supply_name)
@@ -314,7 +314,7 @@ var sql = new cartodb.SQL( {
 
       baselines: [{value: tsDataFiltered[0].storage_capacity, label: "Capacity: " + tsDataFiltered[0].storage_capacity.toLocaleString('en', {maximumSignificantDigits : 3}) + " AF"}],
       max_y: tsDataFiltered[0].storage_capacity,
-      target: "#ts_chart", // the html element that the graphic is inserted in
+      target: target, // the html element that the graphic is inserted in
       x_accessor: 'supply_reading_date',  // the key that accesses the x value
       y_accessor: ['supply_storage','historical_supply_storage'], // the key that accesses the y value
       legend: ['Recorded','Average'],
@@ -323,7 +323,8 @@ var sql = new cartodb.SQL( {
       decimals: 0,
       x_extended_ticks: true,
       y_extended_ticks: true,
-      markers: marker
+      markers: marker,
+      linked: true
       //   mouseover: function(d, i) {
       //     console.log(d);
       //         d3.select('#ts_chart svg .mg-active-datapoint')
@@ -334,6 +335,8 @@ var sql = new cartodb.SQL( {
 
     d3.selectAll('.label')
     .attr('transform', 'translate(-14, 0) rotate(-90)');
+    d3.selectAll('.mg-marker-text')
+    .attr('transform', 'translate(0, 160)');
     //});
   }
 
@@ -572,10 +575,12 @@ var sql = new cartodb.SQL( {
         var pauseDate = layer.getTime();
         var newDate = pauseDate.getUTCFullYear()  + "-" + addZero(pauseDate.getUTCMonth()+1) + "-" + addZero(pauseDate.getUTCDate())
         state.selectedDate = newDate
+        // draw_systemwide_time_series('ucla_estimated_swe', '#snowpack_summary_ts')
+        draw_systemwide_time_series('cdec_reservoir', '#ground_summary_ts')
         //console.log(pauseDate, newDate)
         // $("#date").datepicker("setDate", newDate);
         // $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20sum(reservoir_storage)%20as%20stor,%20sum(historical_reservoir_storage)%20as%20hist,%20sum(storage_capacity)%20as%20cap%20FROM%20reservoir_reading_extract%20WHERE%20date%20=%20%27'+newDate+'T00:00:00Z%27;', drawStateStorage)
-        $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20supply_reading_extract%20WHERE%20supply_data_source_id%20=%20%27'+state.selectedSupply+'%27;', drawResLineGraph)
+        $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20supply_reading_extract%20WHERE%20supply_name%20=%20%27'+state.selectedSupply+'%27;', function(d){ drawResLineGraph(d, "#ts_chart")})
         // query_1 = "\
         // SELECT\
         // the_geom,\
@@ -586,13 +591,13 @@ var sql = new cartodb.SQL( {
         // TO_CHAR(supply_storage, '9G999G990') as supply_storage,\
         // storage_capacity,\
         // TO_CHAR(storage_capacity, '9G999G990') as storage_capacity_text,\
-        // supply_data_source_id,\
+        // supply_name,\
         // supply_reading_date\
         // FROM supply_reading_extract\
         // WHERE supply_reading_date = '"+state.selectedDate+"'\
         // ORDER BY storage_capacity DESC"
         // sublayers[0].setSQL(query_1);
-        // drawCapacity(map, newDate)
+        drawCapacity(map, newDate)
 
       })
       var slider = map.viz.timeSlider;
@@ -607,8 +612,10 @@ var sql = new cartodb.SQL( {
         var pauseDate = layer.getTime();
         var newDate = pauseDate.getUTCFullYear()  + "-" + addZero(pauseDate.getUTCMonth()+1) + "-" + addZero(pauseDate.getUTCDate())
         state.selectedDate = newDate
+        draw_systemwide_time_series('cdec_reservoir', '#ground_summary_ts')
 
-        // $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20supply_reading_extract%20WHERE%20supply_data_source_id%20=%20%27'+state.selectedSupply+'%27;', drawResLineGraph)
+
+        $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20supply_reading_extract%20WHERE%20supply_name%20=%20%27'+state.selectedSupply+'%27', function(d){ drawResLineGraph(d, "#ts_chart")})
 
         // console.log(layer.getStep(), layer.getTime())
       });
@@ -627,7 +634,9 @@ var sql = new cartodb.SQL( {
         state.selectedDate = newDate
         // $("#date").datepicker("setDate", newDate);
         // $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20sum(reservoir_storage)%20as%20stor,%20sum(historical_reservoir_storage)%20as%20hist,%20sum(storage_capacity)%20as%20cap%20FROM%20reservoir_reading_extract%20WHERE%20date%20=%20%27'+newDate+'T00:00:00Z%27;', drawStateStorage)
-        $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20supply_reading_extract%20WHERE%20supply_data_source_id%20=%20%27'+state.selectedSupply+'%27;', drawResLineGraph)
+        $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20supply_reading_extract%20WHERE%20supply_name%20=%20%27'+state.selectedSupply+'%27', function(d){ drawResLineGraph(d, "#ts_chart")})
+        // draw_systemwide_time_series('ucla_estimated_swe', '#snowpack_summary_ts')
+        draw_systemwide_time_series('cdec_reservoir', '#ground_summary_ts')
         // drawCapacity(map, newDate)
 
 
@@ -640,78 +649,78 @@ var sql = new cartodb.SQL( {
     // });
   }
 
-  function drawStateStorage(data){
-    // Remove previous total capacity circles and labels
-    d3.select('#totalCircles').remove()
+  // function drawStateStorage(data){
+  //   // Remove previous total capacity circles and labels
+  //   d3.select('#totalCircles').remove()
+  //
+  //   var volumes = [{title: "Total Capacity", volume: data.rows[0]['cap'], fill: "#FFCC00", stroke: "none", y: 20},
+  //   {title: "Recorded Storage", volume: data.rows[0]['stor'], fill: "#2167AB", stroke: "none", y: 40},
+  //   {title: "Historical Average", volume: data.rows[0]['hist'], fill: "none", stroke: "#ff471a", y: 60}]
+  //   var totalCapacity = (data.rows[0]['cap']);
+  //
+  //   // Create svg to include circles and text labels
+  //   var svg = d3.select("#total").append("svg").attr("id", "totalCircles")
+  //   // Create circles of total system capacity, used storage, and historical average for that day
+  //   var circles = svg.selectAll("circle")
+  //   .data(volumes)
+  //   .enter()
+  //   .append("circle")
+  //   .attr("r", function(d){
+  //     return (70* d.volume/totalCapacity); })
+  //     .attr("cx", 80)
+  //     .attr("cy", 80)
+  //     .style("fill", function(d){
+  //       return d.fill; })
+  //       .style("stroke", function(d){
+  //         return d.stroke; })
+  //         .style("stroke-width", 4)
+  //         .style("stroke-dasharray", "5, 5")
+  //         ;
+  //         // Add labels
+  //         svg.selectAll('text')
+  //         .data(volumes)
+  //         .enter()
+  //         .append("text")
+  //         .attr('x', 180)
+  //         .attr('y', function(d) {return d.y;})
+  //         // Max sig figs will show to the hundred thousand gallons
+  //         .text(function(d) {return (d.title + ": " + d.volume.toLocaleString('en', {maximumSignificantDigits : 3}) +' AF'); })
+  //         // .style("font-size", "1.0rem")
+  //         ;
+  //       }
 
-    var volumes = [{title: "Total Capacity", volume: data.rows[0]['cap'], fill: "#FFCC00", stroke: "none", y: 20},
-    {title: "Recorded Storage", volume: data.rows[0]['stor'], fill: "#2167AB", stroke: "none", y: 40},
-    {title: "Historical Average", volume: data.rows[0]['hist'], fill: "none", stroke: "#ff471a", y: 60}]
-    var totalCapacity = (data.rows[0]['cap']);
-
-    // Create svg to include circles and text labels
-    var svg = d3.select("#total").append("svg").attr("id", "totalCircles")
-    // Create circles of total system capacity, used storage, and historical average for that day
-    var circles = svg.selectAll("circle")
-    .data(volumes)
-    .enter()
-    .append("circle")
-    .attr("r", function(d){
-      return (70* d.volume/totalCapacity); })
-      .attr("cx", 80)
-      .attr("cy", 80)
-      .style("fill", function(d){
-        return d.fill; })
-        .style("stroke", function(d){
-          return d.stroke; })
-          .style("stroke-width", 4)
-          .style("stroke-dasharray", "5, 5")
-          ;
-          // Add labels
-          svg.selectAll('text')
-          .data(volumes)
-          .enter()
-          .append("text")
-          .attr('x', 180)
-          .attr('y', function(d) {return d.y;})
-          // Max sig figs will show to the hundred thousand gallons
-          .text(function(d) {return (d.title + ": " + d.volume.toLocaleString('en', {maximumSignificantDigits : 3}) +' AF'); })
-          // .style("font-size", "1.0rem")
-          ;
-        }
-
-        function drawDatePicker(map) {
-          // Use the date picker to see total statewide volumes for a specific day
-          $("#date").datepicker({
-            dateFormat: "yy-mm-dd",
-            // Allowable dates defined by original query of table stored in Carto
-            maxDate: state.maxDate.slice(0,10),
-            minDate: state.minDate.slice(0,10),
-            onSelect: function(dateText){
-              // Remove previous total capacity circles and labels
-              d3.select('#totalCircles').remove()
-              // Call query to retrieve and aggregate all reservoirs on that day
-              $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20sum(reservoir_storage)%20as%20stor,%20sum(historical_reservoir_storage)%20as%20hist,%20sum(storage_capacity)%20as%20cap%20FROM%20reservoir_reading_extract%20WHERE%20date%20=%20%27'+this.value+'T00:00:00Z%27;', drawStateStorage)
-
-              //recreate Map
-              map.eachLayer(function(layer){
-                //console.log(layer)
-                map.removeLayer(layer);
-              })
-              addTiles(map);
-              //reset animation to the selected value
-              //console.log("date picker date", this.value+"T00:00:00Z")
-              drawAnimation(map, this.value+"T00:00:00Z");
-
-            } // end datePicker on select function
-          }); // end datepicker jquery
-
-          // Set start value for date picker as max date
-          $("#date").datepicker("setDate", state.maxDate.slice(0,10));
-          //drawAnimation(map);
-          $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20sum(reservoir_storage)%20as%20stor,%20sum(historical_reservoir_storage)%20as%20hist,%20sum(storage_capacity)%20as%20cap%20FROM%20reservoir_reading_extract%20WHERE%20date%20=%20%27'+ state.maxDate +'T00:00:00Z%27;', drawStateStorage)
-
-        }; // end datepicker function definition
+        // function drawDatePicker(map) {
+        //   // Use the date picker to see total statewide volumes for a specific day
+        //   $("#date").datepicker({
+        //     dateFormat: "yy-mm-dd",
+        //     // Allowable dates defined by original query of table stored in Carto
+        //     maxDate: state.maxDate.slice(0,10),
+        //     minDate: state.minDate.slice(0,10),
+        //     onSelect: function(dateText){
+        //       // Remove previous total capacity circles and labels
+        //       d3.select('#totalCircles').remove()
+        //       // Call query to retrieve and aggregate all reservoirs on that day
+        //       $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20sum(reservoir_storage)%20as%20stor,%20sum(historical_reservoir_storage)%20as%20hist,%20sum(storage_capacity)%20as%20cap%20FROM%20reservoir_reading_extract%20WHERE%20date%20=%20%27'+this.value+'T00:00:00Z%27;', drawStateStorage)
+        //
+        //       //recreate Map
+        //       map.eachLayer(function(layer){
+        //         //console.log(layer)
+        //         map.removeLayer(layer);
+        //       })
+        //       addTiles(map);
+        //       //reset animation to the selected value
+        //       //console.log("date picker date", this.value+"T00:00:00Z")
+        //       drawAnimation(map, this.value+"T00:00:00Z");
+        //
+        //     } // end datePicker on select function
+        //   }); // end datepicker jquery
+        //
+        //   // Set start value for date picker as max date
+        //   $("#date").datepicker("setDate", state.maxDate.slice(0,10));
+        //   //drawAnimation(map);
+        //   $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20sum(reservoir_storage)%20as%20stor,%20sum(historical_reservoir_storage)%20as%20hist,%20sum(storage_capacity)%20as%20cap%20FROM%20reservoir_reading_extract%20WHERE%20date%20=%20%27'+ state.maxDate +'T00:00:00Z%27;', drawStateStorage)
+        //
+        // }; // end datepicker function definition
 
         function main() {
           styleSetup()
@@ -736,9 +745,13 @@ var sql = new cartodb.SQL( {
 
           // Draw Animation of reservoir levels on map
           drawAnimation(map);
-          // state.selectedSupply = 'whole-sierra'
-          // $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20supply_reading_extract%20WHERE%20supply_data_source_id%20=%20%27'+state.selectedSupply+'%27;', drawResLineGraph)
+          // draw_systemwide_time_series('ucla_estimated_swe', '#snowpack_summary_ts')
+          draw_systemwide_time_series('cdec_reservoir', '#ground_summary_ts', initialize = true)
 
+          state.selectedSupply = 'whole-sierra'
+          // $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20supply_reading_extract%20WHERE%20supply_name%20=%20%27'+state.selectedSupply+'%27;', drawResLineGraph)
+          $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20sum(supply_storage)%20as%20stor,%20sum(historical_supply_storage)%20as%20hist,%20sum(storage_capacity)%20as%20cap%20FROM%20supply_reading_extract;', function(d){ drawResLineGraph(d, "#ts_chart")})
+          // $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20supply_reading_extract%20WHERE%20supply_name%20=%20%27'+state.selectedSupply+'%27;', function(d){ drawResLineGraph(d, "#ts_chart")})
           // Adjust Statewide storage based on datepicker
           // drawDatePicker(map);
 

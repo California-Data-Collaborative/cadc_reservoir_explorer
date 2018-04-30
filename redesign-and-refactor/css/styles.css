@@ -46,7 +46,7 @@ body {
   border: none !important;
 }
 
-#ts {
+.ts {
   padding: 6px 12px;
   font-size: 14px;
   font-weight: 400;
@@ -58,9 +58,9 @@ body {
   border-radius: 4px;
 }
 
-#ts_legend {
+#ts_legend, #ground_summary_ts_legend {
   text-align:center;
-  padding: 5px;
+  padding: 15px;
 }
 
 .mg-area1-color{
@@ -143,6 +143,27 @@ body {
   padding: 0 !important;
 }
 
+/* #summary {
+  z-index: 1000;
+  top: 10px;
+  position: absolute;
+  right: 10px;
+  padding: 15px;
+  width: 33vw;
+  background-color: #f8f9fa;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  border: 1px solid #999;
+  cursor: text;
+  webkit-box-shadow: rgba(0,0,0,.2) 0 0 4px 2px;
+  -moz-box-shadow: rgba(0,0,0,.2) 0 0 4px 2px;
+  box-shadow: rgba(0,0,0,.2) 0 0 4px 2px;
+} */
+
+
 #map {
   width: auto;
   height: 100%;
@@ -151,12 +172,24 @@ body {
 
 .cartodb-timeslider {
   margin-bottom: 0px !important;
-  bottom: 35px!important;
+  bottom: 30px!important;
+  right: 15px !important;
+  left: 15px !important;
+}
+
+.cartodb-timeslider .slider {
+  width: 100%!important;
+}
+
+.cartodb-timeslider .last {
+  width: calc(100% - 180px);
 }
 
 .slider-wrapper {
-  width: auto!important;
-
+  width: 100% !important;
+  /* text-align:center!important; */
+  /* padding-left: 50px!important; */
+  /* left: 15px !important; */
 }
 
 .cartodb-timeslider > ul > li.last > div > div{
@@ -165,4 +198,10 @@ body {
 
 .cartodb-logo{
    display:none!important;
+}
+
+.cartodb-legend-stack {
+  height: 188px !important;
+  top: 10px !important;;
+  right: 10px !important;
 }

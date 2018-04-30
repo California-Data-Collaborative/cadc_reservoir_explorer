@@ -2,7 +2,7 @@ var storageStyles = "#reservoir_levels{ marker-fill-opacity: 0.8; marker-line-co
 
 var capacityStyles = `
 #supply_reading_extract{
-  marker-fill-opacity: 0.5;
+  marker-fill-opacity: 0.75;
   marker-line-color: #FFF;
   marker-line-opacity: 0;
   marker-placement: point;
@@ -15,6 +15,7 @@ var capacityStyles = `
   marker-fill: #FFCC00;
   [supply_name = 'whole-sierra'] {
     marker-fill: white;
+    marker-fill-opacity: .5;
   }
 }
 `

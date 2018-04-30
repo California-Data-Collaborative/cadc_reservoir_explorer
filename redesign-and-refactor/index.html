@@ -13,6 +13,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
   <script type="text/javascript" src="js/style_vars.js"></script>
   <script src="js/script_dev.js"></script>
+  <script src="js/system_wide_picture.js"></script>
 
   <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
@@ -45,9 +46,9 @@
   <div id='content' class="container-fluid">
     <div class="row">
       <div id='detailPanel' class="col-md-4">
-        <h2>Details</h2>
+        <h3>Individual Source Details</h3>
         <div class="form-group">
-          <label for="supplyName">Supply Name</label>
+          <label for="supplyName">Source Name</label>
           <div class="input-group">
             <span class="input-group-addon" id="search-addon">
               <i class="glyphicon glyphicon-search"></i>
@@ -56,13 +57,29 @@
           </div>
         </div>
         <div class="form-group">
-          <div id="ts">
+          <div class="ts">
             <div id="ts_chart"class="chart"></div>
             <div id="ts_legend" class="chart"></div>
           </div>
         </div>
         <div class="form-group">
           <div id='time_slider'></div>
+        </div>
+        <h3>Reservoir System Details</h3>
+        <!-- <div class="form-group">
+          <label for="supplyName">System Name</label>
+          <div class="input-group">
+            <span class="input-group-addon" id="search-addon">
+              <i class="glyphicon glyphicon-search"></i>
+            </span>
+            <input type="text" class="form-control" id="supplyName" aria-describedby="search-addon">
+          </div>
+        </div> -->
+        <div class="form-group">
+          <div class="ts">
+            <div id="ground_summary_ts" class='chart'></div>
+            <div id="ground_summary_ts_legend" class="chart"></div>
+          </div>
         </div>
         <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
           <div class="panel panel-default">
@@ -103,6 +120,16 @@
         </div>
       </div>
       <div id='mapPanel' class="col-md-8">
+        <!-- <div id="summary" class="col-md-4">
+          <h2>Systemwide Details</h2>
+          <div class="form-group">
+            <div id="snowpack_summary_ts" class='ts'></div>
+          </div>
+          <div class="form-group">
+              <div id="ground_summary_ts" class='ts'></div>
+          </div>
+
+        </div> -->
         <div id="map"></div>
       </div>
     </div>
