@@ -46,6 +46,21 @@ body {
   border: none !important;
 }
 
+#barContainer text {
+  /* fill: #000; */
+  font: 1rem sans-serif;
+  text-anchor: initial;
+}
+#barContainer {
+  /* color: #555; */
+
+  background-color: #FFCC00;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  line-height: 0px;
+	/* background-color: #fff; */
+}
+
 .ts {
   padding: 6px 12px;
   font-size: 14px;
@@ -115,6 +130,7 @@ body {
 }
 
 .mg-markers text {
+  font-weight: bold;
   /* font-size: 0.9rem; */
 }
 
@@ -123,10 +139,6 @@ body {
   font-size: 0.9rem;
   font-weight: 400;
   opacity: 0.8;
-}
-
-#time_slider {
-  background-color: #eee;
 }
 
 .panel-group {

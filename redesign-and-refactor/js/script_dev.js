@@ -304,6 +304,29 @@ var sql = new cartodb.SQL( {
     // console.log(tsDataFiltered)
     $('#supplyName').val(tsDataFiltered[0].supply_name)
 
+    storage = tsData.filter(function(element, index, array) {
+      // console.log(element.supply_reading_date.getUTCDate())
+      // console.log(new Date(state.selectedDate))
+      // console.log('')
+
+
+      return (
+        element.supply_reading_date.getUTCFullYear() == new Date(state.selectedDate).getUTCFullYear() &&
+        element.supply_reading_date.getUTCMonth() == new Date(state.selectedDate).getUTCMonth() &&
+        element.supply_reading_date.getUTCDate() == new Date(state.selectedDate).getUTCDate()
+      );
+    });
+
+    console.log(storage)
+
+    data = [
+      storage[0].supply_storage,
+      // storage[0].historical_supply_storage,
+      tsDataFiltered[0].storage_capacity
+    ]
+
+    drawBar(data)
+
     // Draw line graph of levels in selected dam
     MG.data_graphic({
       data: tsDataFiltered,
@@ -757,6 +780,8 @@ var sql = new cartodb.SQL( {
           // drawDatePicker(map);
 
           drawLegends();
+          drawBar();
+
 
 
 
