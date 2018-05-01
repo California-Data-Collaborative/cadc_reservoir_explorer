@@ -1,0 +1,42 @@
+###
+# Codec historic
+###
+
+name: historic
+description: >
+  Transform and load the historic dam data to
+  local sqlite table
+
+dependencies:
+  "lib.bs_parser": "parser"
+
+transform:
+  - step: Set the Table Schema
+    action: transform.schema.SetSchema
+    fields:
+      - name: Dam_ABBR
+        type: string
+      - name: Date
+        type: string
+      - name: STORAGE
+        type: string
+      - name: RES_ELE
+        type: string
+  
+  - step: Parse the html urls to get the historic dam data
+    action: parser.parser
+ 
+load:
+  - step: Specify Table Name
+    action: load.SetTableName
+    table_name: historic
+
+  - step: Output Records to SQLite Table
+    action: load.OutputSQL
+    overwrite: yes
+    upsert: yes
+    repository: sqlite:///cache.db
+    primary_keys:
+      historic:
+        - "Dam_ABBR"
+        - "Date"

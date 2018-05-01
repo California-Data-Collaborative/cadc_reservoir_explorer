@@ -1,0 +1,230 @@
+html, body, #container {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+/*
+p {
+  font-size: 1.1rem;
+}*/
+
+body {
+  padding-top: 50px;
+  /*font-family: 'Open Sans', sans-serif, Arial;*/
+}
+
+#cal, #hist, #explanationHeader {
+  /*z-index: 1000;
+  top: 60px;
+  position: absolute;
+  right: 10px;*/
+  padding: 10px;
+  background: #fff;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  border: 1px solid #999;
+  /*cursor: text;
+  webkit-box-shadow: rgba(0,0,0,.2) 0 0 4px 2px;
+  -moz-box-shadow: rgba(0,0,0,.2) 0 0 4px 2px;
+  box-shadow: rgba(0,0,0,.2) 0 0 4px 2px;*/
+}
+
+#map {
+  width: auto;
+  height: 100%;
+  position: relative;
+}
+
+#argoBrand{
+  font-weight: lighter;
+  width: 200px;
+  color: #66afe9;
+  float: right;
+  text-align: right;
+  padding-right: 0px !important;
+}
+
+.blue{
+  color: #2167AB;
+}
+
+.yellow{
+  color: #FFCC00;
+}
+
+.dropdown-toggle {
+  /*font-weight: lighter;*/
+  /*font-family: "Helvetica";*/
+}
+
+.dropdown-menu {
+  font-weight: lighter;
+  /*font-family: "Helvetica";*/
+}
+
+
+.navbar .navbar-brand {
+  /*font-weight: 25;*/
+  /*font-family: "Helvetica";*/
+  /*font-size: 25px;*/
+
+  color: #FFFFFF;
+}
+
+.cartodb-timeslider > ul > li.last .slider-wrapper{
+    padding-left: 0px;
+}
+.navbar {
+  background: #1f1f1f;
+}
+
+.navbar-inverse .navbar-nav>li>a {
+  color: #fff;
+}
+
+#panel {
+ background: #5C5C5C;
+ padding: 10px;
+ float: left;
+ top: 65px;
+ right: 15px;
+ padding-bottom: 10px;
+ z-index: 10;
+ width: 33%;
+ height: 100%;
+ overflow-y: scroll;
+ /*position: absolute;*/
+}
+#panel > * {
+  margin: 15px 0;
+}
+#explanationHeader{
+    background: #C8C7C7;
+    padding: 10px;
+}
+
+#cal{
+  /*background: #908F8F;*/
+  background: #C8C7C7;
+  padding: 10px;
+}
+#total{
+  background: #C8C7C7;
+  padding-top: 10px;
+}
+#total > svg {
+  width: 100%;
+  height: 100%;
+}
+#explanation{
+  background: #C8C7C7;
+  padding-top: 10px;
+  margin: 0px;
+}
+#hist{
+    background: #C8C7C7;
+    padding: 10px;
+}
+#ts {
+  /*background: #908F8F;*/
+   background: #C8C7C7;
+  /*height: 50%;*/
+}
+
+.cartodb-legend-stack  {
+  border-radius: 0px;
+}
+
+.mg-chart-title{
+  margin-top: 10px;
+  padding: 0px;
+  margin-bottom: 0px;
+}
+
+.mg-area1-color{
+  fill:#2167AB;
+}
+.mg-area2-color {
+    fill: #ff471a;
+}
+.mg-line1-color{
+  stroke:#2167AB;
+}
+.mg-line2-color{
+  stroke:#ff471a;
+}
+.mg-line1-legend-color {
+    text-anchor: end;
+    text-align: right;
+    color: #2167AB;
+    fill: #2167AB;
+}
+
+.mg-line2-legend-color {
+    text-anchor: end;
+    text-align: right;
+    color: #ff471a;
+    fill: #ff471a;
+}
+.mg-hover-line1-color {
+    fill: #2167AB;
+}
+.mg-hover-line2-color {
+    fill: #ff471a;
+}
+.mg-baselines text{
+  text-align: left;
+  text-anchor: start;
+  font-size: 1.0rem;
+}
+.mg-markers line {
+    stroke: #817e7e;
+}
+
+/*cal dev*/
+
+/*.ui-widget{
+  border-radius: 0px;
+}
+.ui-datepicker .ui-datepicker-header {
+  background: #030202;
+  color: #908F8F;
+  border-radius: 0px;
+}
+
+.ui-corner-all{
+  border-radius: 0px;
+}
+
+.ui-widget-content{
+  background: #5C5C5C;
+  border-radius: 0px;
+}*/
+/**/
+ .button {
+  text-align: center;
+  padding: 15px;
+}
+
+.mg-x-axis text, .mg-y-axis text {
+  fill: black ;
+  opacity: 1 ;
+}
+
+/*.mg-y-axis .label text{
+  transform: translate(0, 25) !important;
+}*/
+
+
+
+.mg-x-axis line, .mg-y-axis line {
+  stroke: black ;
+  opacity: .5 ;
+}
+
+.mg-active-datapoint{
+  fill: black;
+}

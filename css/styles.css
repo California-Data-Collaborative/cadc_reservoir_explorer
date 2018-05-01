@@ -1,41 +1,11 @@
-html, body, #container {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
-/*
-p {
-  font-size: 1.1rem;
-}*/
-
 body {
-  padding-top: 50px;
-  /*font-family: 'Open Sans', sans-serif, Arial;*/
+  background-color: #343a40;
+  border-radius: 4px !important;
 }
 
-#cal, #hist, #explanationHeader {
-  /*z-index: 1000;
-  top: 60px;
-  position: absolute;
-  right: 10px;*/
-  padding: 10px;
-  background: #fff;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  -ms-border-radius: 4px;
-  -o-border-radius: 4px;
-  border-radius: 4px;
-  border: 1px solid #999;
-  /*cursor: text;
-  webkit-box-shadow: rgba(0,0,0,.2) 0 0 4px 2px;
-  -moz-box-shadow: rgba(0,0,0,.2) 0 0 4px 2px;
-  box-shadow: rgba(0,0,0,.2) 0 0 4px 2px;*/
-}
-
-#map {
-  width: auto;
-  height: 100%;
-  position: relative;
+.navbar {
+  color: white;
+  margin-bottom: 0px;
 }
 
 #argoBrand{
@@ -47,108 +17,72 @@ body {
   padding-right: 0px !important;
 }
 
-.blue{
-  color: #2167AB;
+#detailPanel {
+  background-color: #f8f9fa;
+  height: 100vh;
+  overflow-y: scroll;
 }
 
-.yellow{
-  color: #FFCC00;
+.ui-autocomplete {
+  padding: 6px 12px;
+  border-radius: 4px;
+  webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
 }
 
-.dropdown-toggle {
-  /*font-weight: lighter;*/
-  /*font-family: "Helvetica";*/
+.ui-autocomplete .ui-state-hover,
+.ui-autocomplete .ui-widget-content .ui-state-hover,
+.ui-autocomplete .ui-widget-header .ui-state-hover,
+.ui-autocomplete .ui-state-focus,
+.ui-autocomplete .ui-widget-content .ui-state-focus,
+.ui-autocomplete .ui-widget-header .ui-state-focus,
+.ui-autocomplete .ui-button:hover,
+.ui-autocomplete .ui-button:focus {
+  padding: 1px 2px;
+  border-radius: 4px;
+  webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  background-color: #eee !important;
+  border: none !important;
 }
 
-.dropdown-menu {
-  font-weight: lighter;
-  /*font-family: "Helvetica";*/
+#barContainer text {
+  /* fill: #000; */
+  font: 1rem sans-serif;
+  text-anchor: initial;
+}
+#barContainer {
+  /* color: #555; */
+
+  background-color: #FFCC00;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  line-height: 0px;
+	/* background-color: #fff; */
 }
 
-
-.navbar .navbar-brand {
-  /*font-weight: 25;*/
-  /*font-family: "Helvetica";*/
-  /*font-size: 25px;*/
-
-  color: #FFFFFF;
+.ts {
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  color: #555;
+  text-align: center;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-.cartodb-timeslider > ul > li.last .slider-wrapper{
-    padding-left: 0px;
-}
-.navbar {
-  background: #1f1f1f;
-}
-
-.navbar-inverse .navbar-nav>li>a {
-  color: #fff;
-}
-
-#panel {
- background: #5C5C5C;
- padding: 10px;
- float: left;
- top: 65px;
- right: 15px;
- padding-bottom: 10px;
- z-index: 10;
- width: 33%;
- height: 100%;
- overflow-y: scroll;
- /*position: absolute;*/
-}
-#panel > * {
-  margin: 15px 0;
-}
-#explanationHeader{
-    background: #C8C7C7;
-    padding: 10px;
-}
-
-#cal{
-  /*background: #908F8F;*/
-  background: #C8C7C7;
-  padding: 10px;
-}
-#total{
-  background: #C8C7C7;
-  padding-top: 10px;
-}
-#total > svg {
-  width: 100%;
-  height: 100%;
-}
-#explanation{
-  background: #C8C7C7;
-  padding-top: 10px;
-  margin: 0px;
-}
-#hist{
-    background: #C8C7C7;
-    padding: 10px;
-}
-#ts {
-  /*background: #908F8F;*/
-   background: #C8C7C7;
-  /*height: 50%;*/
-}
-
-.cartodb-legend-stack  {
-  border-radius: 0px;
-}
-
-.mg-chart-title{
-  margin-top: 10px;
-  padding: 0px;
-  margin-bottom: 0px;
+#ts_legend, #ground_summary_ts_legend {
+  text-align:center;
+  padding: 15px;
 }
 
 .mg-area1-color{
   fill:#2167AB;
 }
 .mg-area2-color {
-    fill: #ff471a;
+  fill: #ff471a;
 }
 .mg-line1-color{
   stroke:#2167AB;
@@ -157,74 +91,129 @@ body {
   stroke:#ff471a;
 }
 .mg-line1-legend-color {
-    text-anchor: end;
-    text-align: right;
-    color: #2167AB;
-    fill: #2167AB;
+  text-anchor: end;
+  text-align: right;
+  color: #2167AB;
+  fill: #2167AB;
 }
 
 .mg-line2-legend-color {
-    text-anchor: end;
-    text-align: right;
-    color: #ff471a;
-    fill: #ff471a;
+  text-anchor: end;
+  text-align: right;
+  color: #ff471a;
+  fill: #ff471a;
 }
 .mg-hover-line1-color {
-    fill: #2167AB;
+  fill: #2167AB;
 }
 .mg-hover-line2-color {
-    fill: #ff471a;
+  fill: #ff471a;
 }
+
+.mg-baselines line{
+  stroke: #FFCC00;
+}
+
 .mg-baselines text{
-  text-align: left;
-  text-anchor: start;
-  font-size: 1.0rem;
+  /* font-size: 0.9rem; */
 }
+
+.mg-x-axis text,
+.mg-y-axis text {
+  fill: #555;
+  /* font-size: 0.9rem; */
+  opacity: .75;
+}
+
 .mg-markers line {
-    stroke: #817e7e;
+  stroke: #817e7e;
 }
 
-/*cal dev*/
-
-/*.ui-widget{
-  border-radius: 0px;
-}
-.ui-datepicker .ui-datepicker-header {
-  background: #030202;
-  color: #908F8F;
-  border-radius: 0px;
+.mg-markers text {
+  font-weight: bold;
+  /* font-size: 0.9rem; */
 }
 
-.ui-corner-all{
-  border-radius: 0px;
+.mg-active-datapoint {
+  fill: #555;
+  font-size: 0.9rem;
+  font-weight: 400;
+  opacity: 0.8;
 }
 
-.ui-widget-content{
-  background: #5C5C5C;
-  border-radius: 0px;
-}*/
-/**/
- .button {
-  text-align: center;
+.panel-group {
+  color: #555;
+  background-color: #eee;
+  border-radius: 4px;
+}
+
+.panel-body {
+}
+
+#mapPanel {
+  height: 100vh;
+  padding: 0 !important;
+}
+
+/* #summary {
+  z-index: 1000;
+  top: 10px;
+  position: absolute;
+  right: 10px;
   padding: 15px;
+  width: 33vw;
+  background-color: #f8f9fa;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  border: 1px solid #999;
+  cursor: text;
+  webkit-box-shadow: rgba(0,0,0,.2) 0 0 4px 2px;
+  -moz-box-shadow: rgba(0,0,0,.2) 0 0 4px 2px;
+  box-shadow: rgba(0,0,0,.2) 0 0 4px 2px;
+} */
+
+
+#map {
+  width: auto;
+  height: 100%;
+  position: relative;
 }
 
-.mg-x-axis text, .mg-y-axis text {
-  fill: black ;
-  opacity: 1 ;
+.cartodb-timeslider {
+  margin-bottom: 0px !important;
+  bottom: 30px!important;
+  right: 15px !important;
+  left: 15px !important;
 }
 
-/*.mg-y-axis .label text{
-  transform: translate(0, 25) !important;
-}*/
-
-
-
-.mg-x-axis line, .mg-y-axis line {
-  stroke: black ;
-  opacity: .5 ;
+.cartodb-timeslider .slider {
+  width: 100%!important;
 }
 
-.mg-active-datapoint{
-  fill: black;
+.cartodb-timeslider .last {
+  width: calc(100% - 180px);
+}
+
+.slider-wrapper {
+  width: 100% !important;
+  /* text-align:center!important; */
+  /* padding-left: 50px!important; */
+  /* left: 15px !important; */
+}
+
+.cartodb-timeslider > ul > li.last > div > div{
+  /* background-color: red!important; */
+}
+
+.cartodb-logo{
+   display:none!important;
+}
+
+.cartodb-legend-stack {
+  height: 188px !important;
+  top: 10px !important;;
+  right: 10px !important;
 }

@@ -1,0 +1,16 @@
+###
+# capacity
+###
+
+extract:
+  - step: Retry requests to an unreliable remote server and download files.
+    action: extract.source.http.Request
+    retry: yes
+    retry_delay_exponential_multiplier: 1
+    retry_max_attempts: 10
+    urls:
+      - http://cdec.water.ca.gov/misc/resinfo.html
+
+  - step: Apply the Codec on the capacity pages
+    action: parsekit.ApplyCodec
+    codec: get_capacity
