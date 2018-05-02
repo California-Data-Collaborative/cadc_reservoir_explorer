@@ -1,4 +1,6 @@
-function draw_time_series(target, initialize = false, system = null){
+function draw_time_series(target, initialize = false, system = null, transition){
+  console.log(transition)
+
   if (target == '#ts_chart') {
     query = `
     SELECT *
@@ -78,6 +80,7 @@ function draw_time_series(target, initialize = false, system = null){
         legend_target: legend_target,
         aggregate_rollover: true,
         decimals: 0,
+        transition_on_update: transition,
         x_extended_ticks: true,
         y_extended_ticks: true,
         markers: marker,

@@ -120,7 +120,7 @@ function drawCapacity(map, selectedDate = state.maxDate){
 
         latLng = new L.LatLng(data.rows[0].lat, data.rows[0].lon);
         map.panTo(latLng);
-        $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20supply_reading_extract%20WHERE%20supply_name%20=%20%27'+state.selectedSupply+'%27;', function(d){ drawResLineGraph(d, "#ts_chart")})
+        draw_time_series(target='#ts_chart', initialize=true, system=null, transition=true)
       })
     }
   });
@@ -221,7 +221,7 @@ var sql = new cartodb.SQL( {
         showFeature(data.cartodb_id)
         state.selectedSupply = data.supply_name
         $('#supplyName').val(data.supply_name)
-        draw_time_series(target='#ts_chart', initialize=true)
+        draw_time_series(target='#ts_chart', initialize=true, system=null, transition=true)
         // Get data for dam and draw line graph
         // $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20supply_reading_extract%20WHERE%20supply_name%20=%20%27'+state.selectedSupply+'%27;', function(d){ drawResLineGraph(d, "#ts_chart")})
 
@@ -230,68 +230,68 @@ var sql = new cartodb.SQL( {
     }); // end .done method of capacity circles
   }
 
-  function drawResLineGraph(tableData, target){
-
-    tsData = MG.convert.date(tableData.rows, 'supply_reading_date', '%Y-%m-%dT%XZ');
-
-    // Reduce the data in the time series graph by a factor of 1/10 to draw faster
-    var tsDataFiltered = tsData.filter(function(element, index, array) {
-      return (index % 10 === 0 && element.supply_storage > 0);
-    });
-
-    var marker = [{"supply_reading_date": new Date(state.selectedDate), "label": state.selectedDate}]
-
-    $('#supplyName').val(tsDataFiltered[0].supply_name)
-    storage = tsData.filter(function(element, index, array) {
-      return (
-        element.supply_reading_date.getUTCFullYear() == new Date(state.selectedDate).getUTCFullYear() &&
-        element.supply_reading_date.getUTCMonth() == new Date(state.selectedDate).getUTCMonth() &&
-        element.supply_reading_date.getUTCDate() == new Date(state.selectedDate).getUTCDate()
-      );
-    });
-    data = [
-      storage[0].supply_storage,
-      // storage[0].historical_supply_storage,
-      tsDataFiltered[0].storage_capacity
-    ]
-    drawBar(data)
-
-    // Draw line graph of levels in selected dam
-    MG.data_graphic({
-      data: tsDataFiltered,
-      full_width: true,
-      // title: tsDataFiltered[0].supply_name,
-
-      y_label: 'Water Volume (AF)',
-      // height: 195,
-
-      baselines: [{value: tsDataFiltered[0].storage_capacity, label: "Capacity: " + tsDataFiltered[0].storage_capacity.toLocaleString('en', {maximumSignificantDigits : 3}) + " AF"}],
-      max_y: tsDataFiltered[0].storage_capacity,
-      target: target, // the html element that the graphic is inserted in
-      x_accessor: 'supply_reading_date',  // the key that accesses the x value
-      y_accessor: ['supply_storage','historical_supply_storage'], // the key that accesses the y value
-      legend: ['Recorded','Average'],
-      legend_target: '#ts_legend',
-      aggregate_rollover: true,
-      decimals: 0,
-      x_extended_ticks: true,
-      y_extended_ticks: true,
-      markers: marker,
-      linked: true
-      //   mouseover: function(d, i) {
-      //     console.log(d);
-      //         d3.select('#ts_chart svg .mg-active-datapoint')
-      //             .text(d)
-      //
-      // }
-    });
-
-    d3.selectAll('.label')
-    .attr('transform', 'translate(-14, 0) rotate(-90)');
-    d3.selectAll('.mg-marker-text')
-    .attr('transform', 'translate(0, 160)');
-    //});
-  }
+  // function drawResLineGraph(tableData, target){
+  //
+  //   tsData = MG.convert.date(tableData.rows, 'supply_reading_date', '%Y-%m-%dT%XZ');
+  //
+  //   // Reduce the data in the time series graph by a factor of 1/10 to draw faster
+  //   var tsDataFiltered = tsData.filter(function(element, index, array) {
+  //     return (index % 10 === 0 && element.supply_storage > 0);
+  //   });
+  //
+  //   var marker = [{"supply_reading_date": new Date(state.selectedDate), "label": state.selectedDate}]
+  //
+  //   $('#supplyName').val(tsDataFiltered[0].supply_name)
+  //   storage = tsData.filter(function(element, index, array) {
+  //     return (
+  //       element.supply_reading_date.getUTCFullYear() == new Date(state.selectedDate).getUTCFullYear() &&
+  //       element.supply_reading_date.getUTCMonth() == new Date(state.selectedDate).getUTCMonth() &&
+  //       element.supply_reading_date.getUTCDate() == new Date(state.selectedDate).getUTCDate()
+  //     );
+  //   });
+  //   data = [
+  //     storage[0].supply_storage,
+  //     // storage[0].historical_supply_storage,
+  //     tsDataFiltered[0].storage_capacity
+  //   ]
+  //   drawBar(data)
+  //
+  //   // Draw line graph of levels in selected dam
+  //   MG.data_graphic({
+  //     data: tsDataFiltered,
+  //     full_width: true,
+  //     // title: tsDataFiltered[0].supply_name,
+  //
+  //     y_label: 'Water Volume (AF)',
+  //     // height: 195,
+  //
+  //     baselines: [{value: tsDataFiltered[0].storage_capacity, label: "Capacity: " + tsDataFiltered[0].storage_capacity.toLocaleString('en', {maximumSignificantDigits : 3}) + " AF"}],
+  //     max_y: tsDataFiltered[0].storage_capacity,
+  //     target: target, // the html element that the graphic is inserted in
+  //     x_accessor: 'supply_reading_date',  // the key that accesses the x value
+  //     y_accessor: ['supply_storage','historical_supply_storage'], // the key that accesses the y value
+  //     legend: ['Recorded','Average'],
+  //     legend_target: '#ts_legend',
+  //     aggregate_rollover: true,
+  //     decimals: 0,
+  //     x_extended_ticks: true,
+  //     y_extended_ticks: true,
+  //     markers: marker,
+  //     linked: true
+  //     //   mouseover: function(d, i) {
+  //     //     console.log(d);
+  //     //         d3.select('#ts_chart svg .mg-active-datapoint')
+  //     //             .text(d)
+  //     //
+  //     // }
+  //   });
+  //
+  //   d3.selectAll('.label')
+  //   .attr('transform', 'translate(-14, 0) rotate(-90)');
+  //   d3.selectAll('.mg-marker-text')
+  //   .attr('transform', 'translate(0, 160)');
+  //   //});
+  // }
 
   function drawAnimation(map, selectedDate = state.maxDate){
     // Set styles for animation of reservoir levels over time. Includes torque definitions and sizing info
@@ -528,8 +528,8 @@ var sql = new cartodb.SQL( {
         var newDate = pauseDate.getUTCFullYear()  + "-" + addZero(pauseDate.getUTCMonth()+1) + "-" + addZero(pauseDate.getUTCDate())
         state.selectedDate = newDate
         // draw_systemwide_time_series('cdec_reservoir', '#ground_summary_ts')
-        draw_time_series(target='#ground_summary_ts', initialize=false, system='cdec_reservoir')
-        draw_time_series(target='#ts_chart', initialize=false)
+        draw_time_series(target='#ground_summary_ts', initialize=false, system='cdec_reservoir', transition=false)
+        draw_time_series(target='#ts_chart', initialize=false, system=null, transition=false)
         // $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20supply_reading_extract%20WHERE%20supply_name%20=%20%27'+state.selectedSupply+'%27;', function(d){ drawResLineGraph(d, "#ts_chart")})
       })
 
@@ -542,7 +542,7 @@ var sql = new cartodb.SQL( {
         var newDate = pauseDate.getUTCFullYear()  + "-" + addZero(pauseDate.getUTCMonth()+1) + "-" + addZero(pauseDate.getUTCDate())
         state.selectedDate = newDate
         // draw_systemwide_time_series('cdec_reservoir', '#ground_summary_ts')
-        draw_time_series(target='#ground_summary_ts', initialize=false, system='cdec_reservoir')
+        draw_time_series(target='#ground_summary_ts', initialize=false, system='cdec_reservoir', transition=false)
         // console.log(changes)
         // if (changes.step < 7) {
         //   initialize = true
@@ -551,7 +551,7 @@ var sql = new cartodb.SQL( {
         // }
         // console.log(changes.step)
         // draw_time_series(target='#ts_chart', initialize=initialize)
-        draw_time_series(target='#ts_chart', initialize=true)
+        draw_time_series(target='#ts_chart', initialize=true, system=null, transition=false)
 
 
         // $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20supply_reading_extract%20WHERE%20supply_name%20=%20%27'+state.selectedSupply+'%27', function(d){ drawResLineGraph(d, "#ts_chart")})
@@ -566,8 +566,8 @@ var sql = new cartodb.SQL( {
         // $.getJSON('https://california-data-collaborative.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20supply_reading_extract%20WHERE%20supply_name%20=%20%27'+state.selectedSupply+'%27', function(d){ drawResLineGraph(d, "#ts_chart")})
         // draw_systemwide_time_series('ucla_estimated_swe', '#snowpack_summary_ts')
         // draw_systemwide_time_series('cdec_reservoir', '#ground_summary_ts')
-        draw_time_series(target='#ground_summary_ts', initialize=false, system='cdec_reservoir')
-        draw_time_series(target='#ts_chart', initialize=true)
+        draw_time_series(target='#ground_summary_ts', initialize=false, system='cdec_reservoir', transition=false)
+        draw_time_series(target='#ts_chart', initialize=true, system=null, transition=false)
         // drawCapacity(map, newDate)
 
       });
@@ -593,7 +593,7 @@ var sql = new cartodb.SQL( {
 
       // Draw Animation of reservoir levels on map
       drawAnimation(map);
-      draw_time_series(target='#ground_summary_ts', initialize=true, system='cdec_reservoir')
+      draw_time_series(target='#ground_summary_ts', initialize=true, system='cdec_reservoir', transition=false)
       // draw_time_series(target='#ts_chart', initialize=true)
       // draw_systemwide_time_series('cdec_reservoir', '#ground_summary_ts', initialize = true)
       drawLegends();
